@@ -2,11 +2,22 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { TeapotAndCup, KitchenUtensils } from "@/components/illustrations/CafeLineArt";
 
 const AboutPreview = () => {
   return (
-    <section className="section-padding">
-      <div className="container-cafe">
+    <section className="section-padding relative overflow-hidden">
+      {/* Decorative Line Art - Left side */}
+      <div className="absolute left-0 top-1/4 opacity-[0.06] -translate-x-1/3 pointer-events-none">
+        <TeapotAndCup className="w-80 h-auto text-foreground" strokeWidth={2} />
+      </div>
+      
+      {/* Decorative Line Art - Right side */}
+      <div className="absolute right-0 bottom-1/4 opacity-[0.06] translate-x-1/3 pointer-events-none">
+        <KitchenUtensils className="w-48 h-auto text-foreground" strokeWidth={2} />
+      </div>
+
+      <div className="container-cafe relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Text Content */}
           <motion.div
@@ -39,7 +50,7 @@ const AboutPreview = () => {
             </div>
           </motion.div>
 
-          {/* Visual Element */}
+          {/* Visual Element with Line Art */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -47,12 +58,25 @@ const AboutPreview = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative"
           >
-            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-elevated">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-caramel/30" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-                <span className="text-8xl md:text-9xl font-serif text-primary mb-4">5</span>
-                <p className="text-xl md:text-2xl font-serif text-foreground mb-2">Years of</p>
-                <p className="text-3xl md:text-4xl font-serif text-primary">Excellence</p>
+            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-elevated bg-gradient-to-br from-cream to-secondary/50 border border-border/30">
+              {/* Animated Line Art Illustration */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
+                <TeapotAndCup 
+                  className="w-full max-w-xs h-auto text-primary/60 mb-6" 
+                  strokeWidth={1.2}
+                  animate={true}
+                />
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 1.5, duration: 0.6 }}
+                  className="text-center"
+                >
+                  <span className="text-7xl md:text-8xl font-serif text-primary mb-2 block">5</span>
+                  <p className="text-lg md:text-xl font-serif text-foreground/80">Years of</p>
+                  <p className="text-2xl md:text-3xl font-serif text-primary">Excellence</p>
+                </motion.div>
               </div>
             </div>
             

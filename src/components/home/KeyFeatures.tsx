@@ -10,7 +10,7 @@ import {
   Utensils,
   ArrowRight 
 } from "lucide-react";
-
+import { DecorativeLine } from "@/components/illustrations/CafeLineArt";
 const features = [
   {
     icon: Car,
@@ -81,6 +81,7 @@ const KeyFeatures = () => {
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-medium text-foreground mb-4">
             What Makes RD CAFE Different
           </h2>
+          <DecorativeLine className="w-32 h-4 mx-auto text-gold/40 my-4" strokeWidth={1.5} />
           <p className="text-muted-foreground text-lg leading-relaxed">
             More than just a café — a destination designed for your comfort.
           </p>
