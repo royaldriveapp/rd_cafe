@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "Menu", path: "/menu" },
+  { name: "Facilities", path: "/facilities" },
   { name: "About", path: "/about" },
   { name: "Gallery", path: "/gallery" },
   { name: "Contact", path: "/contact" },
