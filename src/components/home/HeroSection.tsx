@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import heroImage from "@/assets/hero-cafe.jpg";
+import { CoffeeCup, CroissantSketch } from "@/components/illustrations/CafeLineArt";
 
 const HeroSection = () => {
   return (
@@ -16,6 +17,25 @@ const HeroSection = () => {
         />
         <div className="absolute inset-0 hero-overlay" />
       </div>
+
+      {/* Decorative Line Art Elements */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.15 }}
+        transition={{ delay: 1.5, duration: 1 }}
+        className="absolute left-8 md:left-16 top-1/3 pointer-events-none"
+      >
+        <CoffeeCup className="w-20 md:w-28 h-auto text-primary-foreground" strokeWidth={1} animate={true} />
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.15 }}
+        transition={{ delay: 1.8, duration: 1 }}
+        className="absolute right-8 md:right-16 bottom-1/3 pointer-events-none"
+      >
+        <CroissantSketch className="w-24 md:w-32 h-auto text-primary-foreground" strokeWidth={1} animate={true} />
+      </motion.div>
 
       {/* Content */}
       <div className="relative z-10 container-cafe text-center text-primary-foreground">
