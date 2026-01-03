@@ -101,23 +101,23 @@ const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-x-0 top-18 z-40 lg:hidden bg-background/98 backdrop-blur-lg border-b border-border shadow-elevated"
+            className="fixed inset-0 top-18 z-40 lg:hidden bg-espresso"
           >
-            <div className="container-cafe py-6 space-y-4">
+            <div className="container-cafe py-8 space-y-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`block text-lg font-medium py-2 transition-colors ${
+                  className={`block text-xl font-medium py-4 transition-colors border-b border-espresso-foreground/10 ${
                     location.pathname === link.path
-                      ? "text-primary"
-                      : "text-muted-foreground"
+                      ? "text-gold"
+                      : "text-espresso-foreground hover:text-gold"
                   }`}
                 >
                   {link.name}
                 </Link>
               ))}
-              <Button variant="warm" className="w-full mt-4" asChild>
+              <Button variant="warm" className="w-full mt-6" size="lg" asChild>
                 <Link to="/contact">Visit Us</Link>
               </Button>
             </div>
