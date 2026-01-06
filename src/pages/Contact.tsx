@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import Layout from "@/components/layout/Layout";
@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Send, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useRateLimit } from "@/hooks/useRateLimit";
 
 // Zod validation schema
 const contactSchema = z.object({
@@ -41,6 +42,23 @@ const Contact = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof ContactFormData, string>>>({});
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  
+  const { isRateLimited, recordAttempt, getRemainingCooldown, getRemainingAttempts } = useRateLimit({
+    maxAttempts: 3,
+    windowMs: 300000, // 5 minutes
+    cooldownMs: 60000, // 1 minute cooldown
+  });
+
+  // Update cooldown timer
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const remaining = getRemainingCooldown();
+      setCooldownSeconds(remaining);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [getRemainingCooldown]);
+
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -51,6 +69,16 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+    
+    // Check rate limiting
+    if (isRateLimited()) {
+      toast({
+        title: "Too Many Messages",
+        description: `Please wait ${cooldownSeconds} seconds before sending another message.`,
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Validate with zod
     const result = contactSchema.safeParse(formData);
@@ -72,13 +100,14 @@ const Contact = () => {
     }
     
     setIsSubmitting(true);
+    recordAttempt(); // Record the submission attempt
     
     // Simulate form submission with sanitized data
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     toast({
       title: "Message Sent!",
-      description: "Thank you for reaching out. We'll get back to you soon.",
+      description: `Thank you for reaching out. We'll get back to you soon. ${getRemainingAttempts()} messages remaining.`,
     });
     
     setFormData({ name: "", email: "", subject: "", message: "" });
@@ -284,12 +313,19 @@ const Contact = () => {
                     )}
                   </div>
 
+                  {isRateLimited() && (
+                    <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 flex items-center gap-2 text-sm text-destructive">
+                      <AlertTriangle size={16} />
+                      <span>Too many messages. Wait {cooldownSeconds}s</span>
+                    </div>
+                  )}
+
                   <Button 
                     type="submit" 
                     variant="warm" 
                     size="lg" 
                     className="w-full"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isRateLimited()}
                   >
                     {isSubmitting ? (
                       "Sending..."
