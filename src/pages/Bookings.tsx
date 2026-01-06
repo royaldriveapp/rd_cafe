@@ -585,7 +585,7 @@ const Bookings = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.3 }}
-              className="bg-background rounded-3xl shadow-elevated w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-thin"
+              className="bg-background rounded-3xl shadow-elevated w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="sticky top-0 bg-background z-10 p-6 pb-4 border-b border-border flex items-center justify-between">
