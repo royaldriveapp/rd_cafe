@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { z } from "zod";
 import Layout from "@/components/layout/Layout";
@@ -30,9 +30,11 @@ import {
   Building,
   Banknote,
   X,
-  ArrowRight
+  ArrowRight,
+  AlertTriangle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useRateLimit } from "@/hooks/useRateLimit";
 
 // Base schema for common fields with strict validation
 const baseBookingSchema = z.object({
@@ -156,6 +158,23 @@ const Bookings = () => {
   const [selectedBooking, setSelectedBooking] = useState<BookingType | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  
+  const { isRateLimited, recordAttempt, getRemainingCooldown, getRemainingAttempts } = useRateLimit({
+    maxAttempts: 3,
+    windowMs: 300000, // 5 minutes
+    cooldownMs: 60000, // 1 minute cooldown
+  });
+
+  // Update cooldown timer
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const remaining = getRemainingCooldown();
+      setCooldownSeconds(remaining);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [getRemainingCooldown]);
+
   const [formData, setFormData] = useState<Record<string, any>>({
     name: "",
     email: "",
@@ -210,6 +229,16 @@ const Bookings = () => {
     e.preventDefault();
     setErrors({});
 
+    // Check rate limiting
+    if (isRateLimited()) {
+      toast({
+        title: "Too Many Submissions",
+        description: `Please wait ${cooldownSeconds} seconds before submitting again.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     const schema = getValidationSchema();
     const result = schema.safeParse(formData);
 
@@ -230,11 +259,12 @@ const Bookings = () => {
     }
 
     setIsSubmitting(true);
+    recordAttempt(); // Record the submission attempt
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     toast({
       title: "Booking Request Submitted!",
-      description: "We'll contact you shortly to confirm your booking.",
+      description: `We'll contact you shortly to confirm your booking. ${getRemainingAttempts()} submissions remaining.`,
     });
 
     handleCloseBooking();
