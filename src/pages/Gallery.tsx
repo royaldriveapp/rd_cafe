@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Layout from "@/components/layout/Layout";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
@@ -12,60 +12,39 @@ import gallery2 from "@/assets/gallery-2.jpg";
 import gallery3 from "@/assets/gallery-3.jpg";
 import gallery4 from "@/assets/gallery-4.jpg";
 
-// Layer 1: outer corners
-const layer1Images = [
-  { src: gallery1, alt: "Reading corner" },
-  { src: gallery2, alt: "Barista craft" },
-  { src: gallery3, alt: "Pastry display" },
-  { src: gallery4, alt: "Coffee beans" },
+const galleryImages = [
+  { src: heroImage, alt: "RD Cafe Interior", category: "Interior" },
+  { src: gallery1, alt: "Reading corner", category: "Ambiance" },
+  { src: gallery2, alt: "Barista craft", category: "Coffee" },
+  { src: latteImage, alt: "Signature latte", category: "Coffee" },
+  { src: espressoImage, alt: "Espresso shot", category: "Coffee" },
+  { src: gallery3, alt: "Pastry display", category: "Food" },
+  { src: croissantImage, alt: "Morning croissant", category: "Food" },
+  { src: cakeImage, alt: "Chocolate cake", category: "Food" },
+  { src: gallery4, alt: "Coffee beans", category: "Coffee" },
 ];
-
-// Layer 2: inner positions
-const layer2Images = [
-  { src: latteImage, alt: "Signature latte" },
-  { src: espressoImage, alt: "Espresso shot" },
-  { src: croissantImage, alt: "Morning croissant" },
-  { src: cakeImage, alt: "Chocolate cake" },
-];
-
-// Center hero image
-const centerImage = { src: heroImage, alt: "RD Cafe Interior" };
-
-const allImages = [...layer1Images, ...layer2Images, centerImage];
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  const [isEnhanced, setIsEnhanced] = useState(false);
-
-  useEffect(() => {
-    // Check for scroll-driven animation support
-    const supportsScrollTimeline = CSS.supports('animation-timeline: scroll()');
-    setIsEnhanced(supportsScrollTimeline);
-  }, []);
 
   const navigateImage = (direction: 'prev' | 'next') => {
     if (selectedImage === null) return;
     const newIndex = direction === 'next' 
-      ? (selectedImage + 1) % allImages.length
-      : (selectedImage - 1 + allImages.length) % allImages.length;
+      ? (selectedImage + 1) % galleryImages.length
+      : (selectedImage - 1 + galleryImages.length) % galleryImages.length;
     setSelectedImage(newIndex);
   };
 
   return (
     <Layout>
-      <div 
-        className="gallery-scroll-container" 
-        data-enhanced={isEnhanced}
-        data-center="true"
-        data-layers="true"
-        data-stagger="range"
-      >
+      <div className="min-h-screen bg-background">
         {/* Hero Header */}
-        <header className="gallery-header">
+        <header className="pt-32 pb-16 px-6 md:px-12 lg:px-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            className="max-w-4xl"
           >
             <span className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4 block">
               Visual Stories
@@ -74,56 +53,65 @@ const Gallery = () => {
               Gallery
             </h1>
             <p className="text-muted-foreground max-w-md text-lg leading-relaxed">
-              Scroll to explore moments captured at RD CAFE
+              Moments captured at RD CAFE — where every cup tells a story
             </p>
           </motion.div>
         </header>
 
-        {/* Main scroll section */}
-        <main className="gallery-main">
-          <section className="gallery-scroll-section">
-            <div className="gallery-content">
-              <div className="gallery-grid-layers">
-                {/* Layer 1 - Outer corners */}
-                <div className="layer">
-                  {layer1Images.map((img, i) => (
-                    <div key={`l1-${i}`} onClick={() => setSelectedImage(i)}>
-                      <img src={img.src} alt={img.alt} loading="lazy" />
-                    </div>
-                  ))}
+        {/* Gallery Grid */}
+        <main className="px-6 md:px-12 lg:px-20 pb-20">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+            {galleryImages.map((img, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className={`relative overflow-hidden rounded-xl cursor-pointer group ${
+                  index === 0 ? 'col-span-2 md:col-span-2 row-span-2' : ''
+                }`}
+                onClick={() => setSelectedImage(index)}
+              >
+                <div className={`${index === 0 ? 'aspect-[4/3]' : 'aspect-[4/5]'}`}>
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
                 </div>
-
-                {/* Layer 2 - Inner positions */}
-                <div className="layer">
-                  {layer2Images.map((img, i) => (
-                    <div key={`l2-${i}`} onClick={() => setSelectedImage(layer1Images.length + i)}>
-                      <img src={img.src} alt={img.alt} loading="lazy" />
-                    </div>
-                  ))}
+                <div className="absolute inset-0 bg-gradient-to-t from-espresso/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
+                  <span className="text-xs tracking-wider uppercase text-primary-foreground/70">
+                    {img.category}
+                  </span>
+                  <h3 className="text-primary-foreground font-medium mt-1">
+                    {img.alt}
+                  </h3>
                 </div>
+              </motion.div>
+            ))}
+          </div>
+        </main>
 
-                {/* Layer 3 - Center scaler */}
-                <div className="layer">
-                  <div className="scaler" onClick={() => setSelectedImage(allImages.length - 1)}>
-                    <img src={centerImage.src} alt={centerImage.alt} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* End section */}
-          <section className="gallery-end-section">
-            <div className="text-center px-8">
+        {/* Bottom Section */}
+        <section className="py-24 bg-secondary/30">
+          <div className="text-center px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
               <h2 className="font-serif text-4xl md:text-5xl text-foreground mb-6">
                 Every cup tells a story
               </h2>
               <p className="text-muted-foreground text-lg max-w-xl mx-auto">
                 From the first pour to the last sip, we craft moments worth remembering.
               </p>
-            </div>
-          </section>
-        </main>
+            </motion.div>
+          </div>
+        </section>
       </div>
 
       {/* Lightbox */}
@@ -159,20 +147,32 @@ const Gallery = () => {
               <ChevronRight size={40} />
             </button>
 
-            <motion.img
+            <motion.div
               key={selectedImage}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              src={allImages[selectedImage].src}
-              alt={allImages[selectedImage].alt}
-              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-elevated"
+              className="relative max-w-5xl w-full"
               onClick={(e) => e.stopPropagation()}
-            />
+            >
+              <img
+                src={galleryImages[selectedImage].src}
+                alt={galleryImages[selectedImage].alt}
+                className="w-full max-h-[85vh] object-contain rounded-2xl shadow-elevated"
+              />
+              <div className="mt-4 text-center">
+                <span className="text-xs tracking-wider uppercase text-primary-foreground/50">
+                  {galleryImages[selectedImage].category}
+                </span>
+                <h3 className="text-primary-foreground font-medium mt-1">
+                  {galleryImages[selectedImage].alt}
+                </h3>
+              </div>
+            </motion.div>
             
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-primary-foreground/60 text-sm tracking-wide">
-              {selectedImage + 1} / {allImages.length}
+              {selectedImage + 1} / {galleryImages.length}
             </div>
           </motion.div>
         )}
