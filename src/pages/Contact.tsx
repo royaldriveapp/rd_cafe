@@ -212,7 +212,7 @@ const Contact = () => {
                   Have a question or feedback? We'd love to hear from you.
                 </p>
 
-                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                <form onSubmit={handleSubmit} className="space-y-6" noValidate aria-label="Contact form">
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="name">Name</Label>

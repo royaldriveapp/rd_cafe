@@ -4,7 +4,6 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import heroImage from "@/assets/hero-cafe.jpg";
-import { CoffeeCup, CroissantSketch } from "@/components/illustrations/CafeLineArt";
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -24,11 +23,6 @@ const HeroSection = () => {
   const subtitleY = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const buttonsY = useTransform(scrollYProgress, [0, 1], [0, -50]);
   const welcomeY = useTransform(scrollYProgress, [0, 1], [0, -200]);
-  
-  // Decorative elements depth
-  const leftDoodleX = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const rightDoodleX = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  const doodleScale = useTransform(scrollYProgress, [0, 1], [1, 0.5]);
 
   return (
     <section 
@@ -50,35 +44,6 @@ const HeroSection = () => {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 hero-overlay" />
-      </motion.div>
-
-      {/* Decorative Line Art Elements with parallax depth */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.15 }}
-        transition={{ delay: 1.5, duration: 1 }}
-        style={{ 
-          x: leftDoodleX, 
-          scale: doodleScale,
-          opacity 
-        }}
-        className="absolute left-8 md:left-16 top-1/3 pointer-events-none"
-      >
-        <CoffeeCup className="w-20 md:w-28 h-auto text-primary-foreground" strokeWidth={1} animate={true} />
-      </motion.div>
-      
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.15 }}
-        transition={{ delay: 1.8, duration: 1 }}
-        style={{ 
-          x: rightDoodleX, 
-          scale: doodleScale,
-          opacity 
-        }}
-        className="absolute right-8 md:right-16 bottom-1/3 pointer-events-none"
-      >
-        <CroissantSketch className="w-24 md:w-32 h-auto text-primary-foreground" strokeWidth={1} animate={true} />
       </motion.div>
 
       {/* Content with 3D layered depth */}
