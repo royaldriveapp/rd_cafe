@@ -233,27 +233,36 @@ const Bookings = () => {
         onValueChange={(value) => handleChange("paymentMethod", value)}
         className="grid grid-cols-1 sm:grid-cols-3 gap-3"
       >
-        <div className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === "upi" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
+        <label 
+          htmlFor="upi"
+          className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === "upi" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
+        >
           <RadioGroupItem value="upi" id="upi" />
-          <Label htmlFor="upi" className="flex items-center gap-2 cursor-pointer">
+          <span className="flex items-center gap-2">
             <CreditCard size={18} className="text-primary" />
             UPI
-          </Label>
-        </div>
-        <div className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === "bank" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
+          </span>
+        </label>
+        <label 
+          htmlFor="bank"
+          className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === "bank" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
+        >
           <RadioGroupItem value="bank" id="bank" />
-          <Label htmlFor="bank" className="flex items-center gap-2 cursor-pointer">
+          <span className="flex items-center gap-2">
             <Building size={18} className="text-primary" />
             Bank Transfer
-          </Label>
-        </div>
-        <div className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === "cash" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}>
+          </span>
+        </label>
+        <label 
+          htmlFor="cash"
+          className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === "cash" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
+        >
           <RadioGroupItem value="cash" id="cash" />
-          <Label htmlFor="cash" className="flex items-center gap-2 cursor-pointer">
+          <span className="flex items-center gap-2">
             <Banknote size={18} className="text-primary" />
             Cash (On Visit)
-          </Label>
-        </div>
+          </span>
+        </label>
       </RadioGroup>
       {errors.paymentMethod && (
         <p className="text-sm text-destructive">{errors.paymentMethod}</p>
@@ -576,7 +585,7 @@ const Bookings = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.3 }}
-              className="bg-background rounded-3xl shadow-elevated w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              className="bg-background rounded-3xl shadow-elevated w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-thin"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="sticky top-0 bg-background z-10 p-6 pb-4 border-b border-border flex items-center justify-between">
