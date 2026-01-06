@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// Base schema for common fields
+// Base schema for common fields with strict validation
 const baseBookingSchema = z.object({
   name: z
     .string()
@@ -47,7 +47,8 @@ const baseBookingSchema = z.object({
     .trim()
     .min(1, "Email is required")
     .email("Please enter a valid email address")
-    .max(255, "Email must be less than 255 characters"),
+    .max(255, "Email must be less than 255 characters")
+    .toLowerCase(),
   phone: z
     .string()
     .trim()
@@ -56,19 +57,27 @@ const baseBookingSchema = z.object({
     .regex(/^[+]?[\d\s-]+$/, "Invalid phone number format"),
   guests: z
     .string()
-    .min(1, "Number of guests is required"),
+    .min(1, "Number of guests is required")
+    .regex(/^[\d\-+\s]+$|^[a-zA-Z0-9\-\s]+$/, "Invalid guest selection"),
   hours: z
     .string()
-    .min(1, "Hours required is required"),
+    .min(1, "Hours required is required")
+    .regex(/^[\d\-+\s]+$|^full-day$/, "Invalid hours selection"),
   date: z
     .string()
-    .min(1, "Date is required"),
+    .min(1, "Date is required")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format"),
   timeSlot: z
     .string()
-    .min(1, "Time slot is required"),
+    .min(1, "Time slot is required")
+    .regex(/^\d{2}:\d{2}$/, "Invalid time format"),
   paymentMethod: z
     .enum(["upi", "bank", "cash"], { required_error: "Payment method is required" }),
-  specialRequests: z.string().max(500, "Special requests must be less than 500 characters").optional(),
+  specialRequests: z
+    .string()
+    .max(500, "Special requests must be less than 500 characters")
+    .regex(/^[^<>{}]*$/, "Special characters not allowed")
+    .optional(),
 });
 
 // Birthday specific fields
@@ -76,14 +85,28 @@ const birthdaySchema = baseBookingSchema.extend({
   ageGroup: z.enum(["kids", "teens", "adults", "mixed"], { required_error: "Age group is required" }),
   cakeRequired: z.boolean().optional(),
   decorations: z.boolean().optional(),
-  theme: z.string().max(100).optional(),
+  theme: z
+    .string()
+    .max(100, "Theme must be less than 100 characters")
+    .regex(/^[a-zA-Z0-9\s,'-]*$/, "Theme contains invalid characters")
+    .optional(),
   cateringRequired: z.boolean().optional(),
 });
 
 // Board room specific fields
 const boardRoomSchema = baseBookingSchema.extend({
-  companyName: z.string().trim().min(1, "Company name is required").max(150),
-  meetingPurpose: z.string().trim().min(1, "Meeting purpose is required").max(200),
+  companyName: z
+    .string()
+    .trim()
+    .min(1, "Company name is required")
+    .max(150, "Company name must be less than 150 characters")
+    .regex(/^[a-zA-Z0-9\s.,'&-]+$/, "Company name contains invalid characters"),
+  meetingPurpose: z
+    .string()
+    .trim()
+    .min(1, "Meeting purpose is required")
+    .max(200, "Meeting purpose must be less than 200 characters")
+    .regex(/^[a-zA-Z0-9\s.,'-]+$/, "Meeting purpose contains invalid characters"),
   projectorRequired: z.boolean().optional(),
   whiteboardRequired: z.boolean().optional(),
   videoConferencing: z.boolean().optional(),
@@ -599,12 +622,12 @@ const Bookings = () => {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-6 space-y-6" noValidate>
+              <form onSubmit={handleSubmit} className="p-6 space-y-6" noValidate aria-label={getBookingTitle()}>
                 {/* Common Fields */}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name" className="flex items-center gap-2">
-                      <User size={14} /> Name *
+                      <User size={14} aria-hidden="true" /> Name *
                     </Label>
                     <Input
                       id="name"
@@ -612,12 +635,15 @@ const Bookings = () => {
                       onChange={(e) => handleChange("name", e.target.value)}
                       placeholder="Your full name"
                       className={`bg-background ${errors.name ? "border-destructive" : ""}`}
+                      aria-invalid={!!errors.name}
+                      aria-describedby={errors.name ? "name-error" : undefined}
+                      autoComplete="name"
                     />
-                    {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+                    {errors.name && <p id="name-error" className="text-sm text-destructive">{errors.name}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email" className="flex items-center gap-2">
-                      <Mail size={14} /> Email *
+                      <Mail size={14} aria-hidden="true" /> Email *
                     </Label>
                     <Input
                       id="email"
@@ -626,14 +652,17 @@ const Bookings = () => {
                       onChange={(e) => handleChange("email", e.target.value)}
                       placeholder="your@email.com"
                       className={`bg-background ${errors.email ? "border-destructive" : ""}`}
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? "email-error" : undefined}
+                      autoComplete="email"
                     />
-                    {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                    {errors.email && <p id="email-error" className="text-sm text-destructive">{errors.email}</p>}
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="flex items-center gap-2">
-                    <Phone size={14} /> Phone *
+                    <Phone size={14} aria-hidden="true" /> Phone *
                   </Label>
                   <Input
                     id="phone"
@@ -642,8 +671,11 @@ const Bookings = () => {
                     onChange={(e) => handleChange("phone", e.target.value)}
                     placeholder="+91 98765 43210"
                     className={`bg-background ${errors.phone ? "border-destructive" : ""}`}
+                    aria-invalid={!!errors.phone}
+                    aria-describedby={errors.phone ? "phone-error" : undefined}
+                    autoComplete="tel"
                   />
-                  {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+                  {errors.phone && <p id="phone-error" className="text-sm text-destructive">{errors.phone}</p>}
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
