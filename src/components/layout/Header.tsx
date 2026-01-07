@@ -47,8 +47,16 @@ const Header = () => {
           <div className="flex items-center justify-between h-18 lg:h-22">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-              <span className="font-serif text-2xl md:text-3xl font-semibold tracking-tight text-foreground drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                RD <span className="text-primary drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)]">CAFE</span>
+              <span className={`font-serif text-2xl md:text-3xl font-semibold tracking-tight transition-colors duration-500 ${
+                isScrolled 
+                  ? "text-foreground" 
+                  : "text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+              }`}>
+                RD <span className={`transition-colors duration-500 ${
+                  isScrolled 
+                    ? "text-primary" 
+                    : "text-amber-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+                }`}>CAFE</span>
               </span>
             </Link>
 
