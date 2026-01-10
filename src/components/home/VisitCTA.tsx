@@ -51,13 +51,13 @@ const VisitCTA = () => {
             viewport={{ once: true }}
           >
             <span className="text-sm tracking-[0.3em] uppercase text-gold mb-4 block">
-              Visit Us
+              Plan Your Visit
             </span>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-8 leading-tight">
-              Your Table is <span className="text-gold italic">Waiting</span>
+              We'd Love to <span className="text-gold italic">Welcome You</span>
             </h2>
             <p className="text-espresso-foreground/70 text-lg leading-relaxed mb-10 max-w-lg">
-              Whether it's your morning ritual or an afternoon escape, we're here to make every visit memorable. Come experience the warmth of RD CAFE.
+              Whether for a quiet morning coffee, a business meeting in our private lounge, or an evening with loved ones—your table is ready.
             </p>
             
             <Button variant="hero" size="xl" asChild>
@@ -76,17 +76,17 @@ const VisitCTA = () => {
             viewport={{ once: true }}
             className="space-y-6"
           >
-            <InfoCard icon={MapPin} title="Location">
+            <InfoCard icon={MapPin} title="Find Us">
               <p>
                 123 Cozy Lane, Downtown District<br />
                 City 10001
               </p>
             </InfoCard>
 
-            <InfoCard icon={Clock} title="Opening Hours">
+            <InfoCard icon={Clock} title="Hours">
               <div className="space-y-1">
-                <p>Mon - Fri: 7:00 AM - 9:00 PM</p>
-                <p>Sat - Sun: 8:00 AM - 10:00 PM</p>
+                <p>Monday – Friday: 7:00 AM – 9:00 PM</p>
+                <p>Saturday – Sunday: 8:00 AM – 10:00 PM</p>
               </div>
             </InfoCard>
           </motion.div>

@@ -29,23 +29,23 @@ const AboutPreview = () => {
             viewport={viewportOnce}
           >
             <span className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4 block">
-              Our Story
+              Our Philosophy
             </span>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-8 leading-tight">
-              A Place to Call <span className="text-primary italic">Home</span>
+              Crafted with <span className="text-primary italic">Care</span>
             </h2>
             <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
               <p>
-                Born from a passion for exceptional coffee and the belief that everyone deserves a cozy corner to call their own, RD CAFE opened its doors as a sanctuary from the busy world outside.
+                At RD CAFE, we believe in doing things thoughtfully—sourcing only the finest ingredients, preparing each dish with intention, and creating a space where guests feel genuinely welcomed.
               </p>
               <p>
-                Every detail—from our carefully sourced beans to the soft lighting that welcomes you—is designed to create moments of calm and connection.
+                From our signature beverages to our private lounges, every detail reflects our commitment to quality, warmth, and lasting impressions.
               </p>
             </div>
             <div className="mt-10">
               <Button variant="outline" size="lg" asChild>
                 <Link to="/about">
-                  Read Our Full Story
+                  Learn More About Us
                   <ArrowRight size={16} />
                 </Link>
               </Button>
@@ -77,7 +77,7 @@ const AboutPreview = () => {
                 >
                   <span className="text-7xl md:text-8xl font-serif text-primary mb-2 block">5</span>
                   <p className="text-lg md:text-xl font-serif text-foreground/80">Years of</p>
-                  <p className="text-2xl md:text-3xl font-serif text-primary">Excellence</p>
+                  <p className="text-2xl md:text-3xl font-serif text-primary">Trusted Excellence</p>
                 </motion.div>
               </div>
             </div>

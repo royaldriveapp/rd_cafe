@@ -94,7 +94,7 @@ const HeroSection = () => {
             style={{ y: subtitleY }}
             className="text-lg md:text-xl lg:text-2xl font-light text-primary-foreground/90 max-w-xl mx-auto mb-10 leading-relaxed"
           >
-            Where every cup is a moment of calm. Experience warmth, comfort, and exceptional coffee.
+            A refined destination for discerning guests—private lounges, business facilities, and signature offerings in a welcoming space.
           </motion.p>
           
           <motion.div
