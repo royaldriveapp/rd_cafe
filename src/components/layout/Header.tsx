@@ -40,7 +40,7 @@ const Header = () => {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled
             ? "bg-background/95 backdrop-blur-md shadow-soft border-b border-border/50"
-            : "bg-gradient-to-b from-black/40 to-transparent"
+            : "bg-transparent"
         }`}
       >
         <nav className="container-cafe">
@@ -65,11 +65,8 @@ const Header = () => {
                   className={`transition-all duration-500 ${
                     isScrolled 
                       ? "text-primary" 
-                      : "text-amber-400"
+                      : "text-white"
                   }`}
-                  style={{ 
-                    textShadow: isScrolled ? 'none' : '0 2px 12px rgba(0,0,0,0.9), 0 0 20px rgba(251, 191, 36, 0.4)'
-                  }}
                 >
                   CAFE
                 </span>
@@ -84,7 +81,7 @@ const Header = () => {
                   to={link.path}
                   className={`relative text-sm font-medium tracking-wide transition-all duration-300 py-2 ${
                     location.pathname === link.path
-                      ? isScrolled ? "text-primary" : "text-amber-400"
+                      ? isScrolled ? "text-primary" : "text-white"
                       : isScrolled 
                         ? "text-muted-foreground hover:text-foreground" 
                         : "text-white/90 hover:text-white"
@@ -98,7 +95,7 @@ const Header = () => {
                     <motion.div
                       layoutId="activeNav"
                       className={`absolute -bottom-0.5 left-0 right-0 h-0.5 rounded-full ${
-                        isScrolled ? "bg-primary" : "bg-amber-400"
+                        isScrolled ? "bg-primary" : "bg-white"
                       }`}
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
@@ -122,9 +119,7 @@ const Header = () => {
                 <Button 
                   variant="warm" 
                   asChild 
-                  className={`transition-all duration-300 ${
-                    !isScrolled && "shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50"
-                  }`}
+                  className="transition-all duration-300"
                 >
                   <Link to="/contact">Visit Us</Link>
                 </Button>
