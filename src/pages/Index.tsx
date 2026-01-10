@@ -10,8 +10,8 @@ const Index = () => {
     <Layout>
       <HeroSection />
       <KeyFeatures />
-      <FeaturedMenu />
       <AboutPreview />
+      <FeaturedMenu />
       <VisitCTA />
     </Layout>
   );

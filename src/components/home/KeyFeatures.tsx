@@ -2,21 +2,21 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Zap, Car, TreePine, Baby, Clock, Utensils, ArrowRight } from "lucide-react";
+import { DoorOpen, Car, Zap, ShieldCheck, Clock, Award, ArrowRight } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import { staggerContainer, fadeUpVariants, viewportOnceSmall } from "@/lib/animations";
 
 const features = [
-  { icon: Car, title: "Highway Access & Parking", description: "Right off the highway with vast parking for cars, bikes & buses" },
-  { icon: Zap, title: "EV Charging", description: "Power up your electric vehicle while you dine" },
-  { icon: TreePine, title: "Peaceful Ambience", description: "Escape the noise in our tranquil environment" },
-  { icon: Baby, title: "Family-Friendly", description: "Safe kids play area & comfortable spaces for all" },
-  { icon: Clock, title: "7 AM – 2 AM", description: "Extended hours for early birds & night owls" },
-  { icon: Utensils, title: "Quality-First Food", description: "Premium ingredients, no artificial additives" },
+  { icon: DoorOpen, title: "Private Lounges & Boardroom", description: "Rentable spaces for meetings, events, or quiet gatherings" },
+  { icon: Car, title: "Ample Parking", description: "Spacious parking for cars, bikes, and buses—arrive with ease" },
+  { icon: Zap, title: "EV Charging", description: "Charge your electric vehicle while you dine" },
+  { icon: ShieldCheck, title: "24/7 Security", description: "A safe, secure environment for you and your family" },
+  { icon: Clock, title: "7 AM – 2 AM", description: "Extended hours for early mornings and late evenings" },
+  { icon: Award, title: "Premium Ingredients", description: "Thoughtfully sourced, free from artificial additives" },
 ] as const;
 
 interface FeatureCardProps {
-  icon: typeof Car;
+  icon: typeof DoorOpen;
   title: string;
   description: string;
 }
@@ -45,9 +45,9 @@ const KeyFeatures = () => {
     <section className="section-padding bg-secondary/30">
       <div className="container-cafe">
         <SectionHeader
-          label="Why Choose Us"
-          title="What Makes RD CAFE Different"
-          description="More than just a café — a destination designed for your comfort."
+          label="Our Facilities"
+          title="Designed for Your Comfort"
+          description="Private spaces, modern conveniences, and thoughtful amenities for every guest."
           showDecorativeLine
           className="mb-12"
         />
@@ -73,7 +73,7 @@ const KeyFeatures = () => {
         >
           <Button variant="outline" size="lg" asChild className="group">
             <Link to="/facilities">
-              Explore All Facilities
+              View All Facilities
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>

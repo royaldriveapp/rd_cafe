@@ -11,10 +11,10 @@ import croissantImage from "@/assets/croissant.jpg";
 import cakeImage from "@/assets/chocolate-cake.jpg";
 
 const featuredItems = [
-  { name: "Signature Latte", description: "Smooth espresso with silky steamed milk and artisan latte art", price: "$5.50", image: latteImage, category: "Coffee" },
-  { name: "Classic Espresso", description: "Rich, bold, and perfectly extracted single origin beans", price: "$4.00", image: espressoImage, category: "Coffee" },
-  { name: "Fresh Croissant", description: "Buttery, flaky layers baked fresh every morning", price: "$4.50", image: croissantImage, category: "Pastry" },
-  { name: "Chocolate Fondant", description: "Decadent dark chocolate cake with velvety cocoa dust", price: "$7.00", image: cakeImage, category: "Dessert" },
+  { name: "Signature Latte", description: "Smooth espresso with velvety steamed milk, crafted with care", price: "$5.50", image: latteImage, category: "Signature" },
+  { name: "Single Origin Espresso", description: "Bold and refined—our carefully sourced house blend", price: "$4.00", image: espressoImage, category: "Signature" },
+  { name: "Buttery Croissant", description: "Freshly baked each morning with flaky, golden layers", price: "$4.50", image: croissantImage, category: "Pastry" },
+  { name: "Chocolate Fondant", description: "Rich dark chocolate with a delicate finish", price: "$7.00", image: cakeImage, category: "Dessert" },
 ] as const;
 
 const itemVariants = fadeUp(30, 0.6);
@@ -70,13 +70,13 @@ const FeaturedMenu = () => {
           className="text-center mb-16"
         >
           <span className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4 block">
-            Our Selection
+            From Our Kitchen
           </span>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-6">
-            Featured Delights
+            Signature Offerings
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
-            Carefully crafted beverages and treats that define our café experience
+            Handcrafted beverages and thoughtfully prepared dishes that reflect our dedication to quality.
           </p>
         </motion.div>
 
@@ -101,7 +101,7 @@ const FeaturedMenu = () => {
         >
           <Button variant="default" size="lg" asChild>
             <Link to="/menu">
-              View Full Menu
+              Explore Full Menu
               <ArrowRight size={16} />
             </Link>
           </Button>
