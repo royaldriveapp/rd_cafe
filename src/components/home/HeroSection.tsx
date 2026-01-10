@@ -30,7 +30,7 @@ const HeroSection = () => {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={{ perspective: "1000px" }}
     >
-      {/* Background Image with zoom effect */}
+      {/* Background Image with zoom effect - LCP optimized */}
       <motion.div 
         className="absolute inset-0"
         style={{ 
@@ -42,6 +42,11 @@ const HeroSection = () => {
           src={heroImage}
           alt="Cozy RD CAFE interior with warm lighting"
           className="w-full h-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          width={1920}
+          height={1080}
         />
         <div className="absolute inset-0 hero-overlay" />
       </motion.div>
