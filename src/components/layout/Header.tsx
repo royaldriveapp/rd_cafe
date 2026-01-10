@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
 import { Menu, X, Coffee } from "lucide-react";
 
 const navLinks = [
@@ -28,15 +28,39 @@ const steamVariants = {
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const location = useLocation();
+  
+  const lastScrollY = useRef(0);
+  const scrollThreshold = 10; // Minimum scroll distance to trigger hide/show
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+      const scrollDelta = currentScrollY - lastScrollY.current;
+      
+      // Update scrolled state for styling
+      setIsScrolled(currentScrollY > 50);
+      
+      // At the top of the page - always show
+      if (currentScrollY < 50) {
+        setIsVisible(true);
+      } 
+      // Scrolling down - hide navbar (only if scrolled enough)
+      else if (scrollDelta > scrollThreshold) {
+        setIsVisible(false);
+      } 
+      // Scrolling up - show navbar
+      else if (scrollDelta < -scrollThreshold) {
+        setIsVisible(true);
+      }
+      
+      lastScrollY.current = currentScrollY;
     };
-    window.addEventListener("scroll", handleScroll);
+    
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -44,12 +68,25 @@ const Header = () => {
     setIsMobileMenuOpen(false);
   }, [location]);
 
+  // Keep navbar visible when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      setIsVisible(true);
+    }
+  }, [isMobileMenuOpen]);
+
   return (
     <>
       <motion.header
         initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        animate={{ 
+          y: isVisible ? 0 : -100, 
+          opacity: isVisible ? 1 : 0 
+        }}
+        transition={{ 
+          duration: 0.4, 
+          ease: [0.25, 0.1, 0.25, 1] // Soft cubic-bezier for calm feel
+        }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out ${
           isScrolled
             ? "bg-white/90 backdrop-blur-xl shadow-[0_4px_30px_-10px_rgba(139,90,43,0.15)] border-b border-[hsl(35,25%,88%)]"
