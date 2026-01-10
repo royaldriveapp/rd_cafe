@@ -1,8 +1,10 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { TeapotAndCup, KitchenUtensils } from "@/components/illustrations/CafeLineArt";
+import { slideIn, viewportOnce } from "@/lib/animations";
 
 const AboutPreview = () => {
   return (
@@ -21,10 +23,10 @@ const AboutPreview = () => {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Text Content */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
+            variants={slideIn("left")}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
           >
             <span className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4 block">
               Our Story
@@ -52,10 +54,10 @@ const AboutPreview = () => {
 
           {/* Visual Element with Line Art */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            variants={slideIn("right")}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
             className="relative"
           >
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-elevated bg-gradient-to-br from-cream to-secondary/50 border border-border/30">
@@ -80,7 +82,7 @@ const AboutPreview = () => {
               </div>
             </div>
             
-            {/* Floating accent */}
+            {/* Floating accents */}
             <motion.div
               animate={{ y: [0, -15, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -98,4 +100,4 @@ const AboutPreview = () => {
   );
 };
 
-export default AboutPreview;
+export default memo(AboutPreview);
