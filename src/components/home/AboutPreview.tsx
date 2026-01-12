@@ -43,10 +43,10 @@ const AboutPreview = () => {
               </p>
             </div>
             <div className="mt-10">
-              <Button variant="outline" size="lg" asChild>
+              <Button variant="outline" size="lg" asChild className="group glow-hover">
                 <Link to="/about">
                   Learn More About Us
-                  <ArrowRight size={16} />
+                  <ArrowRight size={16} className="arrow-slide" />
                 </Link>
               </Button>
             </div>
