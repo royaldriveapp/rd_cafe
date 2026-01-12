@@ -18,20 +18,14 @@ import {
   Phone,
   Utensils,
   Gift,
-  History
+  History,
+  LogOut
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fadeUp, staggerContainer, viewportOnce } from "@/lib/animations";
+import { useAuth } from "@/contexts/AuthContext";
 
-// Mock user data
-const mockUser = {
-  name: "Sarah",
-  totalVisits: 12,
-  memberSince: "March 2024",
-  loyaltyPoints: 240,
-  nextReward: 300,
-};
-
+// Mock data - in a real app this would come from the database
 const mockUpcomingBookings = [
   { id: 1, type: "Birthday", date: "2024-01-20", time: "18:00", guests: 8, status: "confirmed" },
   { id: 2, type: "Business Lounge", date: "2024-01-25", time: "10:00", guests: 4, status: "pending" },
@@ -53,6 +47,14 @@ const mockMessages = [
   { id: 1, subject: "Booking Confirmed", date: "2024-01-15", read: true },
   { id: 2, subject: "Special Offer for You!", date: "2024-01-12", read: false },
 ];
+
+// Mock user stats - in real app this would come from database
+const mockUserStats = {
+  totalVisits: 12,
+  memberSince: "March 2024",
+  loyaltyPoints: 240,
+  nextReward: 300,
+};
 
 // Helper components
 const StatusBadge = ({ status }: { status: string }) => {
@@ -97,32 +99,49 @@ const QuickActionCard = ({
   </Link>
 );
 
-const WelcomeCard = ({ user }: { user: typeof mockUser }) => {
-  const progressPercent = (user.loyaltyPoints / user.nextReward) * 100;
+interface WelcomeCardProps {
+  userName: string;
+  stats: typeof mockUserStats;
+  onLogout: () => void;
+}
+
+const WelcomeCard = ({ userName, stats, onLogout }: WelcomeCardProps) => {
+  const progressPercent = (stats.loyaltyPoints / stats.nextReward) * 100;
   
   return (
     <Card className="card-feature-gradient border-border/50">
       <CardContent className="pt-6 pb-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-serif">Welcome back, {user.name}!</h2>
+            <h2 className="text-2xl font-serif">Welcome back, {userName}!</h2>
             <p className="text-muted-foreground text-sm mt-1">
-              Member since {user.memberSince} • {user.totalVisits} visits
+              Member since {stats.memberSince} • {stats.totalVisits} visits
             </p>
           </div>
-          <div className="flex items-center gap-3 bg-secondary/50 rounded-xl px-4 py-3">
-            <Gift size={20} className="text-gold" />
-            <div>
-              <p className="text-xs text-muted-foreground">Loyalty Points</p>
-              <p className="font-semibold">{user.loyaltyPoints} / {user.nextReward}</p>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 bg-secondary/50 rounded-xl px-4 py-3">
+              <Gift size={20} className="text-gold" />
+              <div>
+                <p className="text-xs text-muted-foreground">Loyalty Points</p>
+                <p className="font-semibold">{stats.loyaltyPoints} / {stats.nextReward}</p>
+              </div>
             </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onLogout}
+              className="hidden sm:flex items-center gap-2"
+            >
+              <LogOut size={16} />
+              Sign Out
+            </Button>
           </div>
         </div>
         
         <div className="mt-4">
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
             <span>Progress to next reward</span>
-            <span>{user.nextReward - user.loyaltyPoints} points to go</span>
+            <span>{stats.nextReward - stats.loyaltyPoints} points to go</span>
           </div>
           <div className="h-2 bg-secondary rounded-full overflow-hidden">
             <div 
@@ -131,6 +150,17 @@ const WelcomeCard = ({ user }: { user: typeof mockUser }) => {
             />
           </div>
         </div>
+
+        {/* Mobile logout button */}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onLogout}
+          className="sm:hidden flex items-center gap-2 mt-4 w-full justify-center"
+        >
+          <LogOut size={16} />
+          Sign Out
+        </Button>
       </CardContent>
     </Card>
   );
@@ -138,6 +168,13 @@ const WelcomeCard = ({ user }: { user: typeof mockUser }) => {
 
 const UserDashboard = () => {
   const [activeTab] = useState<"overview" | "bookings" | "history">("overview");
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   const stats = useMemo(() => ({
     upcomingBookings: mockUpcomingBookings.length,
@@ -159,7 +196,11 @@ const UserDashboard = () => {
               className="space-y-6"
             >
               <motion.div variants={fadeUp()}>
-                <WelcomeCard user={mockUser} />
+                <WelcomeCard 
+                  userName={user?.name || "Guest"} 
+                  stats={mockUserStats} 
+                  onLogout={handleLogout} 
+                />
               </motion.div>
 
               {/* Quick Stats */}
@@ -273,7 +314,7 @@ const UserDashboard = () => {
                       </div>
                       <Badge variant="secondary" className="text-xs">
                         <History size={12} className="mr-1" />
-                        {mockUser.totalVisits} total
+                        {mockUserStats.totalVisits} total
                       </Badge>
                     </div>
                   </CardHeader>
