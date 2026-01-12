@@ -24,7 +24,7 @@ interface FeatureCardProps {
 const FeatureCard = memo(({ icon: Icon, title, description }: FeatureCardProps) => (
   <motion.article
     variants={fadeUpVariants}
-    className="group p-5 md:p-6 rounded-2xl bg-background border border-border/50 hover:border-gold/30 card-interactive text-center"
+    className="group p-5 md:p-6 card-feature-gradient card-interactive text-center"
   >
     <div className="w-12 h-12 mx-auto rounded-xl bg-gold/10 flex items-center justify-center mb-4 group-hover:bg-gold/20 transition-colors duration-300" aria-hidden="true">
       <Icon className="w-6 h-6 text-gold icon-bounce" aria-hidden="true" />

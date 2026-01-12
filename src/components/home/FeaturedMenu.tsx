@@ -28,9 +28,9 @@ interface MenuItemCardProps {
 }
 
 const MenuItemCard = memo(({ name, description, price, image, category }: MenuItemCardProps) => (
-  <motion.div variants={itemVariants}>
-    <Card variant="menu" className="h-full overflow-hidden card-interactive">
-      <div className="relative aspect-square img-zoom">
+  <motion.div variants={itemVariants} className="group">
+    <div className="h-full card-menu-gradient card-interactive">
+      <div className="relative aspect-square img-zoom rounded-t-2xl overflow-hidden">
         <img
           src={image}
           alt={name}
@@ -52,7 +52,7 @@ const MenuItemCard = memo(({ name, description, price, image, category }: MenuIt
           {description}
         </p>
       </CardContent>
-    </Card>
+    </div>
   </motion.div>
 ));
 
