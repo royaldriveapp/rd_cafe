@@ -123,12 +123,9 @@ const Logo = memo(() => (
         className="absolute -top-2 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full blur-sm bg-[hsl(30,25%,75%)]"
       />
     </motion.div>
-    <motion.span 
-      className="text-xl md:text-2xl font-semibold tracking-wider text-[hsl(20,30%,20%)] transition-all duration-500"
-      style={{ fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.12em' }}
-    >
-      RD <span className="text-[hsl(25,45%,40%)]">CAFE</span>
-    </motion.span>
+    <span className="text-xl md:text-2xl font-serif font-semibold tracking-wider text-foreground transition-all duration-500">
+      RD <span className="text-primary">CAFE</span>
+    </span>
   </Link>
 ));
 
@@ -153,7 +150,7 @@ const DesktopNav = memo(({ currentPath, hoveredLink, onHoverStart, onHoverEnd }:
       >
         <Link
           to={link.path}
-          className={`relative text-sm font-display font-medium tracking-wide transition-all duration-400 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded ${
+          className={`relative text-sm font-serif font-medium tracking-wide transition-all duration-400 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded ${
             currentPath === link.path
               ? "text-primary" 
               : "text-muted-foreground hover:text-foreground"
@@ -199,7 +196,7 @@ const CTAButton = memo(() => (
     >
       <Link 
         to="/contact"
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-display font-semibold text-sm tracking-wide bg-primary text-primary-foreground shadow-soft hover:bg-primary/90 hover:shadow-card transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-serif font-semibold text-sm tracking-wide bg-primary text-primary-foreground shadow-soft hover:bg-primary/90 hover:shadow-card transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
       >
         <span>Visit Us</span>
         <motion.span
@@ -307,7 +304,7 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
               >
                 <Link
                   to={link.path}
-                  className={`flex items-center gap-3 text-lg font-display font-medium tracking-wide py-4 px-4 rounded-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                  className={`flex items-center gap-3 text-lg font-serif font-medium tracking-wide py-4 px-4 rounded-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                     currentPath === link.path
                       ? "text-primary bg-secondary"
                       : "text-foreground hover:text-primary hover:bg-muted hover:pl-6"
@@ -336,7 +333,7 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
             >
               <Link 
                 to="/contact"
-                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full font-display font-semibold tracking-wide bg-primary text-primary-foreground shadow-card hover:bg-primary/90 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
+                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full font-serif font-semibold tracking-wide bg-primary text-primary-foreground shadow-card hover:bg-primary/90 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
                 role="menuitem"
               >
                 <Coffee size={18} aria-hidden="true" />
