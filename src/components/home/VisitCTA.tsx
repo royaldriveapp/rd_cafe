@@ -14,10 +14,10 @@ interface InfoCardProps {
 }
 
 const InfoCard = memo(({ icon: Icon, title, children }: InfoCardProps) => (
-  <div className="p-6 lg:p-8 rounded-2xl bg-espresso-foreground/5 border border-espresso-foreground/10 backdrop-blur-sm">
+  <div className="group p-6 lg:p-8 rounded-2xl bg-espresso-foreground/5 border border-espresso-foreground/10 backdrop-blur-sm card-interactive">
     <div className="flex items-start gap-4">
-      <div className="p-3 rounded-xl bg-gold/20">
-        <Icon className="text-gold" size={24} />
+      <div className="p-3 rounded-xl bg-gold/20 transition-colors duration-300 group-hover:bg-gold/30">
+        <Icon className="text-gold icon-bounce" size={24} />
       </div>
       <div>
         <h3 className="font-serif text-xl mb-2">{title}</h3>
@@ -60,10 +60,10 @@ const VisitCTA = () => {
               Whether for a quiet morning coffee, a business meeting in our private lounge, or an evening with loved ones—your table is ready.
             </p>
             
-            <Button variant="hero" size="xl" asChild>
+            <Button variant="hero" size="xl" asChild className="group glow-hover">
               <Link to="/contact">
                 Get Directions
-                <ArrowRight size={18} />
+                <ArrowRight size={18} className="arrow-slide" />
               </Link>
             </Button>
           </motion.div>

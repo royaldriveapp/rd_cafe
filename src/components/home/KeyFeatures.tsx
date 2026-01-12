@@ -24,10 +24,10 @@ interface FeatureCardProps {
 const FeatureCard = memo(({ icon: Icon, title, description }: FeatureCardProps) => (
   <motion.article
     variants={fadeUpVariants}
-    className="group p-5 md:p-6 rounded-2xl bg-background border border-border/50 hover:border-gold/30 hover:shadow-card transition-all duration-300 text-center"
+    className="group p-5 md:p-6 rounded-2xl bg-background border border-border/50 hover:border-gold/30 card-interactive text-center"
   >
     <div className="w-12 h-12 mx-auto rounded-xl bg-gold/10 flex items-center justify-center mb-4 group-hover:bg-gold/20 transition-colors duration-300" aria-hidden="true">
-      <Icon className="w-6 h-6 text-gold" aria-hidden="true" />
+      <Icon className="w-6 h-6 text-gold icon-bounce" aria-hidden="true" />
     </div>
     <h3 className="font-serif text-base md:text-lg font-medium text-foreground mb-2">
       {title}
@@ -74,10 +74,10 @@ const KeyFeatures = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-center"
         >
-          <Button variant="outline" size="lg" asChild className="group">
+          <Button variant="outline" size="lg" asChild className="group glow-hover">
             <Link to="/facilities">
               View All Facilities
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+              <ArrowRight className="w-4 h-4 ml-2 arrow-slide" aria-hidden="true" />
             </Link>
           </Button>
         </motion.div>

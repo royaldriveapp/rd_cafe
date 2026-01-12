@@ -29,16 +29,16 @@ interface MenuItemCardProps {
 
 const MenuItemCard = memo(({ name, description, price, image, category }: MenuItemCardProps) => (
   <motion.div variants={itemVariants}>
-    <Card variant="menu" className="h-full overflow-hidden">
-      <div className="relative aspect-square overflow-hidden">
+    <Card variant="menu" className="h-full overflow-hidden card-interactive">
+      <div className="relative aspect-square img-zoom">
         <img
           src={image}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover"
           loading="lazy"
         />
         <div className="absolute top-4 left-4">
-          <span className="px-3 py-1 text-xs tracking-wide uppercase bg-background/90 backdrop-blur-sm rounded-full text-foreground">
+          <span className="px-3 py-1 text-xs tracking-wide uppercase bg-background/90 backdrop-blur-sm rounded-full text-foreground badge-pop">
             {category}
           </span>
         </div>
@@ -99,10 +99,10 @@ const FeaturedMenu = () => {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="text-center mt-12"
         >
-          <Button variant="default" size="lg" asChild>
+          <Button variant="default" size="lg" asChild className="glow-hover group">
             <Link to="/menu">
               Explore Full Menu
-              <ArrowRight size={16} />
+              <ArrowRight size={16} className="arrow-slide" />
             </Link>
           </Button>
         </motion.div>
