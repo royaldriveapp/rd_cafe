@@ -153,12 +153,11 @@ const DesktopNav = memo(({ currentPath, hoveredLink, onHoverStart, onHoverEnd }:
       >
         <Link
           to={link.path}
-          className={`relative text-[13px] font-medium tracking-[0.06em] uppercase transition-all duration-400 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded ${
+          className={`relative text-sm font-display font-medium tracking-wide transition-all duration-400 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded ${
             currentPath === link.path
-              ? "text-[hsl(25,50%,35%)]" 
-              : "text-[hsl(20,15%,40%)] hover:text-[hsl(20,30%,25%)]"
+              ? "text-primary" 
+              : "text-muted-foreground hover:text-foreground"
           }`}
-          style={{ fontFamily: "'Inter', sans-serif" }}
           role="menuitem"
           aria-current={currentPath === link.path ? "page" : undefined}
         >
@@ -200,8 +199,7 @@ const CTAButton = memo(() => (
     >
       <Link 
         to="/contact"
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm tracking-wide bg-[hsl(28,45%,42%)] text-white shadow-[0_2px_12px_-3px_rgba(139,90,43,0.3)] hover:bg-[hsl(28,50%,38%)] hover:shadow-[0_4px_18px_-4px_rgba(139,90,43,0.4)] transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(28,45%,42%)]"
-        style={{ fontFamily: "'Inter', sans-serif" }}
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-display font-semibold text-sm tracking-wide bg-primary text-primary-foreground shadow-soft hover:bg-primary/90 hover:shadow-card transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
       >
         <span>Visit Us</span>
         <motion.span
@@ -309,12 +307,11 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
               >
                 <Link
                   to={link.path}
-                  className={`flex items-center gap-3 text-lg font-medium py-4 px-4 rounded-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                  className={`flex items-center gap-3 text-lg font-display font-medium tracking-wide py-4 px-4 rounded-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                     currentPath === link.path
-                      ? "text-[hsl(30,50%,40%)] bg-[hsl(35,30%,92%)]"
-                      : "text-[hsl(25,25%,30%)] hover:text-[hsl(30,50%,40%)] hover:bg-[hsl(35,25%,94%)] hover:pl-6"
+                      ? "text-primary bg-secondary"
+                      : "text-foreground hover:text-primary hover:bg-muted hover:pl-6"
                   }`}
-                  style={{ fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.03em' }}
                   role="menuitem"
                   aria-current={currentPath === link.path ? "page" : undefined}
                 >
@@ -339,8 +336,7 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
             >
               <Link 
                 to="/contact"
-                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full bg-[hsl(30,45%,40%)] text-white font-medium shadow-[0_4px_20px_-6px_rgba(139,90,43,0.4)] hover:bg-[hsl(30,50%,35%)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(30,45%,40%)]"
-                style={{ fontFamily: "'Inter', sans-serif" }}
+                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full font-display font-semibold tracking-wide bg-primary text-primary-foreground shadow-card hover:bg-primary/90 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
                 role="menuitem"
               >
                 <Coffee size={18} aria-hidden="true" />
