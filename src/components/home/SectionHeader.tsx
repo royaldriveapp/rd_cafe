@@ -10,6 +10,7 @@ interface SectionHeaderProps {
   showDecorativeLine?: boolean;
   className?: string;
   align?: "left" | "center";
+  headingId?: string;
 }
 
 const SectionHeader = ({
@@ -20,6 +21,7 @@ const SectionHeader = ({
   showDecorativeLine = false,
   className = "",
   align = "center",
+  headingId,
 }: SectionHeaderProps) => {
   const alignmentClasses = align === "center" ? "text-center mx-auto" : "text-left";
   
@@ -36,14 +38,14 @@ const SectionHeader = ({
           {label}
         </p>
       )}
-      <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-medium text-foreground mb-4">
+      <h2 id={headingId} className="font-serif text-3xl md:text-4xl lg:text-5xl font-medium text-foreground mb-4">
         {title}
         {titleHighlight && (
           <span className="text-primary italic"> {titleHighlight}</span>
         )}
       </h2>
       {showDecorativeLine && (
-        <DecorativeLine className="w-32 h-4 mx-auto text-gold/40 my-4" strokeWidth={1.5} />
+        <DecorativeLine className="w-32 h-4 mx-auto text-gold/40 my-4" strokeWidth={1.5} aria-hidden="true" />
       )}
       {description && (
         <p className="text-muted-foreground text-lg leading-relaxed">

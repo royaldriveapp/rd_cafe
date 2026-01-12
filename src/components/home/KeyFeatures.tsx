@@ -22,12 +22,12 @@ interface FeatureCardProps {
 }
 
 const FeatureCard = memo(({ icon: Icon, title, description }: FeatureCardProps) => (
-  <motion.div
+  <motion.article
     variants={fadeUpVariants}
     className="group p-5 md:p-6 rounded-2xl bg-background border border-border/50 hover:border-gold/30 hover:shadow-card transition-all duration-300 text-center"
   >
-    <div className="w-12 h-12 mx-auto rounded-xl bg-gold/10 flex items-center justify-center mb-4 group-hover:bg-gold/20 transition-colors duration-300">
-      <Icon className="w-6 h-6 text-gold" />
+    <div className="w-12 h-12 mx-auto rounded-xl bg-gold/10 flex items-center justify-center mb-4 group-hover:bg-gold/20 transition-colors duration-300" aria-hidden="true">
+      <Icon className="w-6 h-6 text-gold" aria-hidden="true" />
     </div>
     <h3 className="font-serif text-base md:text-lg font-medium text-foreground mb-2">
       {title}
@@ -35,14 +35,14 @@ const FeatureCard = memo(({ icon: Icon, title, description }: FeatureCardProps) 
     <p className="text-muted-foreground text-sm leading-relaxed">
       {description}
     </p>
-  </motion.div>
+  </motion.article>
 ));
 
 FeatureCard.displayName = "FeatureCard";
 
 const KeyFeatures = () => {
   return (
-    <section className="section-padding bg-secondary/30">
+    <section className="section-padding bg-secondary/30" aria-labelledby="facilities-heading">
       <div className="container-cafe">
         <SectionHeader
           label="Our Facilities"
@@ -50,6 +50,7 @@ const KeyFeatures = () => {
           description="Private spaces, modern conveniences, and thoughtful amenities for every guest."
           showDecorativeLine
           className="mb-12"
+          headingId="facilities-heading"
         />
 
         <motion.div
@@ -58,6 +59,8 @@ const KeyFeatures = () => {
           whileInView="visible"
           viewport={viewportOnceSmall}
           className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 mb-12"
+          role="list"
+          aria-label="Café facilities and amenities"
         >
           {features.map((feature) => (
             <FeatureCard key={feature.title} {...feature} />
@@ -74,7 +77,7 @@ const KeyFeatures = () => {
           <Button variant="outline" size="lg" asChild className="group">
             <Link to="/facilities">
               View All Facilities
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
             </Link>
           </Button>
         </motion.div>
