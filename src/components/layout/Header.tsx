@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Coffee } from "lucide-react";
+import { Menu, X, Coffee, User, LogIn } from "lucide-react";
 import { steamAnimation, smoothTransition } from "@/lib/animations";
+import { useAuth } from "@/contexts/AuthContext";
 
 const NAV_LINKS = [
   { name: "Home", path: "/" },
@@ -187,29 +188,62 @@ const DesktopNav = memo(({ currentPath, hoveredLink, onHoverStart, onHoverEnd }:
 
 DesktopNav.displayName = "DesktopNav";
 
-const CTAButton = memo(() => (
-  <div className="hidden lg:block">
-    <motion.div
-      whileHover={{ scale: 1.03, y: -1 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-    >
-      <Link 
-        to="/contact"
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-serif font-semibold text-sm tracking-wide bg-primary text-primary-foreground shadow-soft hover:bg-primary/90 hover:shadow-card transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
-      >
-        <span>Visit Us</span>
-        <motion.span
-          animate={{ x: [0, 3, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          aria-hidden="true"
+const CTAButton = memo(() => {
+  const { user } = useAuth();
+  
+  return (
+    <div className="hidden lg:flex items-center gap-3">
+      {user ? (
+        <motion.div
+          whileHover={{ scale: 1.03, y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          →
-        </motion.span>
-      </Link>
-    </motion.div>
-  </div>
-));
+          <Link 
+            to="/dashboard"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-serif font-medium text-sm tracking-wide bg-secondary text-foreground hover:bg-secondary/80 transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            <User size={16} />
+            <span>Dashboard</span>
+          </Link>
+        </motion.div>
+      ) : (
+        <motion.div
+          whileHover={{ scale: 1.03, y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        >
+          <Link 
+            to="/login"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-serif font-medium text-sm tracking-wide border border-border text-foreground hover:bg-secondary transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            <LogIn size={16} />
+            <span>Sign In</span>
+          </Link>
+        </motion.div>
+      )}
+      <motion.div
+        whileHover={{ scale: 1.03, y: -1 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+      >
+        <Link 
+          to="/contact"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-serif font-semibold text-sm tracking-wide bg-primary text-primary-foreground shadow-soft hover:bg-primary/90 hover:shadow-card transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
+        >
+          <span>Visit Us</span>
+          <motion.span
+            animate={{ x: [0, 3, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            aria-hidden="true"
+          >
+            →
+          </motion.span>
+        </Link>
+      </motion.div>
+    </div>
+  );
+});
 
 CTAButton.displayName = "CTAButton";
 
@@ -324,11 +358,13 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
               </motion.li>
             ))}
             
+            <MobileAuthButton />
+            
             <motion.li
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.4 }}
-              className="pt-6"
+              transition={{ delay: 0.55, duration: 0.4 }}
+              className="pt-2"
               role="none"
             >
               <Link 
@@ -348,5 +384,41 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
 ));
 
 MobileMenu.displayName = "MobileMenu";
+
+const MobileAuthButton = memo(() => {
+  const { user } = useAuth();
+  
+  return (
+    <motion.li
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5, duration: 0.4 }}
+      className="pt-4"
+      role="none"
+    >
+      {user ? (
+        <Link 
+          to="/dashboard"
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-serif font-medium tracking-wide border border-border text-foreground hover:bg-secondary transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          role="menuitem"
+        >
+          <User size={18} aria-hidden="true" />
+          <span>My Dashboard</span>
+        </Link>
+      ) : (
+        <Link 
+          to="/login"
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-serif font-medium tracking-wide border border-border text-foreground hover:bg-secondary transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          role="menuitem"
+        >
+          <LogIn size={18} aria-hidden="true" />
+          <span>Sign In</span>
+        </Link>
+      )}
+    </motion.li>
+  );
+});
+
+MobileAuthButton.displayName = "MobileAuthButton";
 
 export default Header;
