@@ -29,6 +29,7 @@ const HeroSection = () => {
       ref={containerRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={{ perspective: "1000px" }}
+      aria-labelledby="hero-heading"
     >
       {/* Background Image with zoom effect - LCP optimized */}
       <motion.div 
@@ -37,16 +38,18 @@ const HeroSection = () => {
           scale,
           transformStyle: "preserve-3d",
         }}
+        aria-hidden="true"
       >
         <img
           src={heroImage}
-          alt="Cozy RD CAFE interior with warm lighting"
+          alt=""
           className="w-full h-full object-cover"
           loading="eager"
           fetchPriority="high"
           decoding="async"
           width={1920}
           height={1080}
+          role="presentation"
         />
         <div className="absolute inset-0 hero-overlay" />
       </motion.div>
@@ -78,6 +81,7 @@ const HeroSection = () => {
           </motion.p>
           
           <motion.h1
+            id="hero-heading"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
@@ -107,7 +111,7 @@ const HeroSection = () => {
             <Button variant="hero" size="xl" asChild>
               <Link to="/menu">
                 Explore Menu
-                <ArrowRight size={18} />
+                <ArrowRight size={18} aria-hidden="true" />
               </Link>
             </Button>
             <Button 
@@ -122,13 +126,14 @@ const HeroSection = () => {
         </motion.div>
       </motion.div>
 
-      {/* Scroll Indicator */}
+      {/* Scroll Indicator - decorative */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2, duration: 0.6 }}
         style={{ opacity }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        aria-hidden="true"
       >
         <motion.div
           animate={{ y: [0, 10, 0] }}

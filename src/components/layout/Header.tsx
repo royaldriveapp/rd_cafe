@@ -69,6 +69,7 @@ const Header = () => {
         animate={{ y: isVisible ? 0 : -100, opacity: isVisible ? 1 : 0 }}
         transition={smoothTransition}
         className="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 pt-4"
+        role="banner"
       >
         <nav 
           className={`
@@ -78,6 +79,7 @@ const Header = () => {
               : "bg-[hsl(40,25%,99%)]/80 backdrop-blur-lg shadow-[0_4px_30px_-8px_rgba(0,0,0,0.08)] border border-white/40"
             }
           `}
+          aria-label="Main navigation"
         >
           <div className="flex items-center justify-between h-16 lg:h-18 px-6 lg:px-8">
             <Logo />
@@ -103,11 +105,16 @@ const Header = () => {
 };
 
 const Logo = memo(() => (
-  <Link to="/" className="flex items-center gap-3 group">
+  <Link 
+    to="/" 
+    className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg"
+    aria-label="RD CAFE - Go to homepage"
+  >
     <motion.div
       className="relative"
       whileHover={{ rotate: [0, -5, 5, 0] }}
       transition={{ duration: 0.5 }}
+      aria-hidden="true"
     >
       <Coffee size={26} className="text-[hsl(25,45%,35%)] transition-all duration-500" />
       <motion.div
@@ -135,22 +142,25 @@ interface DesktopNavProps {
 }
 
 const DesktopNav = memo(({ currentPath, hoveredLink, onHoverStart, onHoverEnd }: DesktopNavProps) => (
-  <div className="hidden lg:flex items-center gap-8">
+  <ul className="hidden lg:flex items-center gap-8" role="menubar">
     {NAV_LINKS.map((link) => (
-      <motion.div
+      <motion.li
         key={link.path}
         onHoverStart={() => onHoverStart(link.path)}
         onHoverEnd={onHoverEnd}
         className="relative"
+        role="none"
       >
         <Link
           to={link.path}
-          className={`relative text-[13px] font-medium tracking-[0.06em] uppercase transition-all duration-400 py-2 ${
+          className={`relative text-[13px] font-medium tracking-[0.06em] uppercase transition-all duration-400 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded ${
             currentPath === link.path
               ? "text-[hsl(25,50%,35%)]" 
               : "text-[hsl(20,15%,40%)] hover:text-[hsl(20,30%,25%)]"
           }`}
           style={{ fontFamily: "'Inter', sans-serif" }}
+          role="menuitem"
+          aria-current={currentPath === link.path ? "page" : undefined}
         >
           <span className="relative z-10">{link.name}</span>
           
@@ -159,6 +169,7 @@ const DesktopNav = memo(({ currentPath, hoveredLink, onHoverStart, onHoverEnd }:
               layoutId="activeNav"
               className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[hsl(25,50%,45%)]"
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              aria-hidden="true"
             />
           )}
           
@@ -170,11 +181,12 @@ const DesktopNav = memo(({ currentPath, hoveredLink, onHoverStart, onHoverEnd }:
               opacity: hoveredLink === link.path && currentPath !== link.path ? 1 : 0
             }}
             transition={{ duration: 0.4, ease: "easeOut" }}
+            aria-hidden="true"
           />
         </Link>
-      </motion.div>
+      </motion.li>
     ))}
-  </div>
+  </ul>
 ));
 
 DesktopNav.displayName = "DesktopNav";
@@ -188,13 +200,14 @@ const CTAButton = memo(() => (
     >
       <Link 
         to="/contact"
-        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm tracking-wide bg-[hsl(28,45%,42%)] text-white shadow-[0_2px_12px_-3px_rgba(139,90,43,0.3)] hover:bg-[hsl(28,50%,38%)] hover:shadow-[0_4px_18px_-4px_rgba(139,90,43,0.4)] transition-all duration-400 ease-out"
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm tracking-wide bg-[hsl(28,45%,42%)] text-white shadow-[0_2px_12px_-3px_rgba(139,90,43,0.3)] hover:bg-[hsl(28,50%,38%)] hover:shadow-[0_4px_18px_-4px_rgba(139,90,43,0.4)] transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(28,45%,42%)]"
         style={{ fontFamily: "'Inter', sans-serif" }}
       >
         <span>Visit Us</span>
         <motion.span
           animate={{ x: [0, 3, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          aria-hidden="true"
         >
           →
         </motion.span>
@@ -213,8 +226,10 @@ interface MobileMenuToggleProps {
 const MobileMenuToggle = memo(({ isOpen, onToggle }: MobileMenuToggleProps) => (
   <motion.button
     onClick={onToggle}
-    className="lg:hidden p-2.5 rounded-xl text-[hsl(20,25%,30%)] hover:bg-[hsl(35,25%,94%)] transition-all duration-300"
-    aria-label="Toggle menu"
+    className="lg:hidden p-2.5 rounded-xl text-[hsl(20,25%,30%)] hover:bg-[hsl(35,25%,94%)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+    aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+    aria-expanded={isOpen}
+    aria-controls="mobile-menu"
     whileTap={{ scale: 0.9 }}
     whileHover={{ scale: 1.05 }}
   >
@@ -227,7 +242,7 @@ const MobileMenuToggle = memo(({ isOpen, onToggle }: MobileMenuToggleProps) => (
           exit={{ rotate: 90, opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <X size={24} />
+          <X size={24} aria-hidden="true" />
         </motion.div>
       ) : (
         <motion.div
@@ -237,7 +252,7 @@ const MobileMenuToggle = memo(({ isOpen, onToggle }: MobileMenuToggleProps) => (
           exit={{ rotate: -90, opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <Menu size={24} />
+          <Menu size={24} aria-hidden="true" />
         </motion.div>
       )}
     </AnimatePresence>
@@ -261,6 +276,9 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
         className="fixed inset-0 top-20 z-40 lg:hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
       >
         <motion.div 
           className="absolute inset-0 bg-black/20 backdrop-blur-sm"
@@ -268,60 +286,69 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
+          aria-hidden="true"
         />
         
-        <motion.div
+        <motion.nav
+          id="mobile-menu"
           initial={{ x: "100%" }}
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="absolute right-0 top-0 bottom-0 w-[280px] bg-[hsl(35,28%,97%)] shadow-[-10px_0_40px_-10px_rgba(0,0,0,0.15)]"
+          aria-label="Mobile navigation"
         >
-          <div className="p-6 pt-8 space-y-1">
+          <ul className="p-6 pt-8 space-y-1" role="menu">
             {NAV_LINKS.map((link, index) => (
-              <motion.div
+              <motion.li
                 key={link.path}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 + 0.1, duration: 0.4 }}
+                role="none"
               >
                 <Link
                   to={link.path}
-                  className={`flex items-center gap-3 text-lg font-medium py-4 px-4 rounded-xl transition-all duration-300 ${
+                  className={`flex items-center gap-3 text-lg font-medium py-4 px-4 rounded-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                     currentPath === link.path
                       ? "text-[hsl(30,50%,40%)] bg-[hsl(35,30%,92%)]"
                       : "text-[hsl(25,25%,30%)] hover:text-[hsl(30,50%,40%)] hover:bg-[hsl(35,25%,94%)] hover:pl-6"
                   }`}
                   style={{ fontFamily: "'Cormorant Garamond', serif", letterSpacing: '0.03em' }}
+                  role="menuitem"
+                  aria-current={currentPath === link.path ? "page" : undefined}
                 >
                   {currentPath === link.path && (
                     <motion.span
                       layoutId="mobileActive"
                       className="w-1.5 h-1.5 rounded-full bg-[hsl(30,50%,45%)]"
+                      aria-hidden="true"
                     />
                   )}
                   {link.name}
                 </Link>
-              </motion.div>
+              </motion.li>
             ))}
             
-            <motion.div
+            <motion.li
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.4 }}
               className="pt-6"
+              role="none"
             >
               <Link 
                 to="/contact"
-                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full bg-[hsl(30,45%,40%)] text-white font-medium shadow-[0_4px_20px_-6px_rgba(139,90,43,0.4)] hover:bg-[hsl(30,50%,35%)] transition-all duration-300"
+                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full bg-[hsl(30,45%,40%)] text-white font-medium shadow-[0_4px_20px_-6px_rgba(139,90,43,0.4)] hover:bg-[hsl(30,50%,35%)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(30,45%,40%)]"
                 style={{ fontFamily: "'Inter', sans-serif" }}
+                role="menuitem"
               >
-                <Coffee size={18} />
+                <Coffee size={18} aria-hidden="true" />
                 <span>Visit Us</span>
               </Link>
-            </motion.div>
-          </div>
-        </motion.div>
+            </motion.li>
+          </ul>
+        </motion.nav>
       </motion.div>
     )}
   </AnimatePresence>
