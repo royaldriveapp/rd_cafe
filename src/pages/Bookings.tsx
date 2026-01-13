@@ -84,14 +84,28 @@ const baseBookingSchema = z.object({
 
 // Birthday specific fields
 const birthdaySchema = baseBookingSchema.extend({
-  ageGroup: z.enum(["kids", "teens", "adults", "mixed"], { required_error: "Age group is required" }),
-  cakeRequired: z.boolean().optional(),
-  decorations: z.boolean().optional(),
-  theme: z
+  birthdayPersonName: z
     .string()
-    .max(100, "Theme must be less than 100 characters")
-    .regex(/^[a-zA-Z0-9\s,'-]*$/, "Theme contains invalid characters")
+    .trim()
+    .min(1, "Birthday person's name is required")
+    .max(100, "Name must be less than 100 characters")
+    .regex(/^[a-zA-Z\s'-]+$/, "Name contains invalid characters"),
+  birthdayPersonDOB: z
+    .string()
+    .min(1, "Date of birth is required")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format"),
+  cakeChoice: z.enum(["chocolate", "vanilla", "butterscotch", "red_velvet", "black_forest", "custom"], { 
+    required_error: "Please select a cake" 
+  }),
+  cakeMessage: z
+    .string()
+    .trim()
+    .max(100, "Cake message must be less than 100 characters")
+    .regex(/^[a-zA-Z0-9\s.,!?'"-]*$/, "Message contains invalid characters")
     .optional(),
+  decorationType: z.enum(["basic", "standard", "premium", "custom"], { 
+    required_error: "Please select decoration type" 
+  }),
   cateringRequired: z.boolean().optional(),
 });
 
@@ -344,60 +358,98 @@ const Bookings = () => {
 
   const renderBirthdayFields = () => (
     <div className="space-y-6">
+      {/* Birthday Person Details */}
+      <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+        <h4 className="font-medium text-foreground mb-4 flex items-center gap-2">
+          <Cake size={18} className="text-primary" />
+          Birthday Person Details
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="birthdayPersonName">Name *</Label>
+            <Input
+              id="birthdayPersonName"
+              value={formData.birthdayPersonName || ""}
+              onChange={(e) => handleChange("birthdayPersonName", e.target.value)}
+              placeholder="Birthday person's name"
+              className={`bg-background ${errors.birthdayPersonName ? "border-destructive" : ""}`}
+            />
+            {errors.birthdayPersonName && <p className="text-sm text-destructive">{errors.birthdayPersonName}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="birthdayPersonDOB">Date of Birth *</Label>
+            <Input
+              id="birthdayPersonDOB"
+              type="date"
+              value={formData.birthdayPersonDOB || ""}
+              onChange={(e) => handleChange("birthdayPersonDOB", e.target.value)}
+              className={`bg-background ${errors.birthdayPersonDOB ? "border-destructive" : ""}`}
+            />
+            {errors.birthdayPersonDOB && <p className="text-sm text-destructive">{errors.birthdayPersonDOB}</p>}
+          </div>
+        </div>
+      </div>
+
+      {/* Cake Selection */}
       <div className="space-y-2">
-        <Label htmlFor="ageGroup">Age Group *</Label>
-        <Select value={formData.ageGroup || ""} onValueChange={(value) => handleChange("ageGroup", value)}>
-          <SelectTrigger className={errors.ageGroup ? "border-destructive" : ""}>
-            <SelectValue placeholder="Select age group" />
+        <Label htmlFor="cakeChoice">Choose the Cake *</Label>
+        <Select value={formData.cakeChoice || ""} onValueChange={(value) => handleChange("cakeChoice", value)}>
+          <SelectTrigger className={errors.cakeChoice ? "border-destructive" : ""}>
+            <SelectValue placeholder="Select cake flavor" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="kids">Kids (Under 12)</SelectItem>
-            <SelectItem value="teens">Teens (13-19)</SelectItem>
-            <SelectItem value="adults">Adults (20+)</SelectItem>
-            <SelectItem value="mixed">Mixed Ages</SelectItem>
+            <SelectItem value="chocolate">Chocolate Cake</SelectItem>
+            <SelectItem value="vanilla">Vanilla Cake</SelectItem>
+            <SelectItem value="butterscotch">Butterscotch Cake</SelectItem>
+            <SelectItem value="red_velvet">Red Velvet Cake</SelectItem>
+            <SelectItem value="black_forest">Black Forest Cake</SelectItem>
+            <SelectItem value="custom">Custom (Specify in requests)</SelectItem>
           </SelectContent>
         </Select>
-        {errors.ageGroup && <p className="text-sm text-destructive">{errors.ageGroup}</p>}
+        {errors.cakeChoice && <p className="text-sm text-destructive">{errors.cakeChoice}</p>}
       </div>
 
+      {/* Message on Cake */}
       <div className="space-y-2">
-        <Label htmlFor="theme">Party Theme (Optional)</Label>
+        <Label htmlFor="cakeMessage">Message on Cake (Optional)</Label>
         <Input
-          id="theme"
-          value={formData.theme || ""}
-          onChange={(e) => handleChange("theme", e.target.value)}
-          placeholder="e.g., Superhero, Princess, Jungle..."
+          id="cakeMessage"
+          value={formData.cakeMessage || ""}
+          onChange={(e) => handleChange("cakeMessage", e.target.value)}
+          placeholder="e.g., Happy Birthday John!"
           className="bg-background"
+          maxLength={100}
         />
+        <p className="text-xs text-muted-foreground">Max 100 characters for cake message</p>
       </div>
 
-      <div className="space-y-3">
-        <Label>Additional Services</Label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors">
-            <Checkbox
-              id="cakeRequired"
-              checked={formData.cakeRequired || false}
-              onCheckedChange={(checked) => handleChange("cakeRequired", checked)}
-            />
-            <Label htmlFor="cakeRequired" className="cursor-pointer">Cake Arrangement</Label>
-          </div>
-          <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors">
-            <Checkbox
-              id="decorations"
-              checked={formData.decorations || false}
-              onCheckedChange={(checked) => handleChange("decorations", checked)}
-            />
-            <Label htmlFor="decorations" className="cursor-pointer">Decorations</Label>
-          </div>
-          <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors">
-            <Checkbox
-              id="cateringRequired"
-              checked={formData.cateringRequired || false}
-              onCheckedChange={(checked) => handleChange("cateringRequired", checked)}
-            />
-            <Label htmlFor="cateringRequired" className="cursor-pointer">Catering Service</Label>
-          </div>
+      {/* Decoration Type */}
+      <div className="space-y-2">
+        <Label htmlFor="decorationType">Choose Decoration *</Label>
+        <Select value={formData.decorationType || ""} onValueChange={(value) => handleChange("decorationType", value)}>
+          <SelectTrigger className={errors.decorationType ? "border-destructive" : ""}>
+            <SelectValue placeholder="Select decoration package" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="basic">Basic (Balloons & Banner) - ₹500</SelectItem>
+            <SelectItem value="standard">Standard (Balloons, Banner, Streamers) - ₹1,500</SelectItem>
+            <SelectItem value="premium">Premium (Full Theme Decoration) - ₹3,500</SelectItem>
+            <SelectItem value="custom">Custom (Discuss with us)</SelectItem>
+          </SelectContent>
+        </Select>
+        {errors.decorationType && <p className="text-sm text-destructive">{errors.decorationType}</p>}
+      </div>
+
+      {/* Catering */}
+      <div className="flex items-center gap-3 p-4 rounded-xl border border-border hover:border-primary/50 transition-colors">
+        <Checkbox
+          id="cateringRequired"
+          checked={formData.cateringRequired || false}
+          onCheckedChange={(checked) => handleChange("cateringRequired", checked)}
+        />
+        <div>
+          <Label htmlFor="cateringRequired" className="cursor-pointer font-medium">Add Catering Service</Label>
+          <p className="text-sm text-muted-foreground">Food & beverages for your guests</p>
         </div>
       </div>
     </div>
