@@ -12,55 +12,95 @@ import {
   Heart,
   MessageSquare,
   ChevronRight,
-  Star,
-  CheckCircle,
   Users,
   Phone,
   Utensils,
   Gift,
   History,
-  LogOut
+  LogOut,
+  CheckCircle,
+  Inbox,
+  Star
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { fadeUp, staggerContainer, viewportOnce } from "@/lib/animations";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Mock data - in a real app this would come from the database
-const mockUpcomingBookings = [
-  { id: 1, type: "Birthday", date: "2024-01-20", time: "18:00", guests: 8, status: "confirmed" },
-  { id: 2, type: "Business Lounge", date: "2024-01-25", time: "10:00", guests: 4, status: "pending" },
-];
+// Types for real data
+interface Booking {
+  id: string;
+  type: string;
+  date: string;
+  time: string;
+  guests: number;
+  status: "pending" | "confirmed" | "cancelled";
+}
 
-const mockPastVisits = [
-  { id: 1, date: "2024-01-08", type: "Table Booking", guests: 2, spent: "₹1,850" },
-  { id: 2, date: "2024-01-02", type: "Birthday Party", guests: 12, spent: "₹8,500" },
-  { id: 3, date: "2023-12-24", type: "Table Booking", guests: 4, spent: "₹3,200" },
-];
+interface PastVisit {
+  id: string;
+  date: string;
+  type: string;
+  guests: number;
+  spent: string;
+}
 
-const mockFavorites = [
-  { id: 1, name: "Cappuccino", category: "Coffee", price: 180 },
-  { id: 2, name: "Croissant", category: "Pastries", price: 150 },
-  { id: 3, name: "Caesar Salad", category: "Food", price: 320 },
-];
+interface FavoriteItem {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+}
 
-const mockMessages = [
-  { id: 1, subject: "Booking Confirmed", date: "2024-01-15", read: true },
-  { id: 2, subject: "Special Offer for You!", date: "2024-01-12", read: false },
-];
+interface Message {
+  id: string;
+  subject: string;
+  date: string;
+  read: boolean;
+}
 
-// Mock user stats - in real app this would come from database
-const mockUserStats = {
-  totalVisits: 12,
-  memberSince: "March 2024",
-  loyaltyPoints: 240,
-  nextReward: 300,
-};
+interface UserStats {
+  totalVisits: number;
+  memberSince: string;
+  loyaltyPoints: number;
+  nextReward: number;
+}
+
+// Empty state component
+const EmptyState = ({ 
+  icon: Icon, 
+  title, 
+  description, 
+  actionLabel, 
+  actionHref 
+}: { 
+  icon: React.ElementType; 
+  title: string; 
+  description: string;
+  actionLabel?: string;
+  actionHref?: string;
+}) => (
+  <div className="text-center py-8 px-4">
+    <div className="w-12 h-12 rounded-full bg-secondary mx-auto mb-3 flex items-center justify-center">
+      <Icon size={24} className="text-muted-foreground" />
+    </div>
+    <p className="font-medium text-sm">{title}</p>
+    <p className="text-xs text-muted-foreground mt-1">{description}</p>
+    {actionLabel && actionHref && (
+      <Link to={actionHref}>
+        <Button variant="link" size="sm" className="mt-2">
+          {actionLabel}
+        </Button>
+      </Link>
+    )}
+  </div>
+);
 
 // Helper components
 const StatusBadge = ({ status }: { status: string }) => {
   const config = {
     confirmed: { label: "Confirmed", className: "bg-green-100 text-green-700 border-green-200" },
     pending: { label: "Pending", className: "bg-amber-100 text-amber-700 border-amber-200" },
+    cancelled: { label: "Cancelled", className: "bg-red-100 text-red-700 border-red-200" },
   }[status] || { label: status, className: "" };
   
   return (
@@ -101,21 +141,23 @@ const QuickActionCard = ({
 
 interface WelcomeCardProps {
   userName: string;
-  stats: typeof mockUserStats;
+  stats: UserStats;
   onLogout: () => void;
 }
 
 const WelcomeCard = ({ userName, stats, onLogout }: WelcomeCardProps) => {
-  const progressPercent = (stats.loyaltyPoints / stats.nextReward) * 100;
+  const hasLoyaltyProgress = stats.loyaltyPoints > 0;
+  const progressPercent = hasLoyaltyProgress ? (stats.loyaltyPoints / stats.nextReward) * 100 : 0;
   
   return (
     <Card className="card-feature-gradient border-border/50">
       <CardContent className="pt-6 pb-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-serif">Welcome back, {userName}!</h2>
+            <h2 className="text-2xl font-serif">Welcome, {userName}!</h2>
             <p className="text-muted-foreground text-sm mt-1">
-              Member since {stats.memberSince} • {stats.totalVisits} visits
+              {stats.memberSince ? `Member since ${stats.memberSince}` : "Welcome to RD Café"}
+              {stats.totalVisits > 0 && ` • ${stats.totalVisits} visits`}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -138,18 +180,29 @@ const WelcomeCard = ({ userName, stats, onLogout }: WelcomeCardProps) => {
           </div>
         </div>
         
-        <div className="mt-4">
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
-            <span>Progress to next reward</span>
-            <span>{stats.nextReward - stats.loyaltyPoints} points to go</span>
+        {hasLoyaltyProgress && (
+          <div className="mt-4">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+              <span>Progress to next reward</span>
+              <span>{stats.nextReward - stats.loyaltyPoints} points to go</span>
+            </div>
+            <div className="h-2 bg-secondary rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-gold to-caramel rounded-full transition-all duration-500"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
-          <div className="h-2 bg-secondary rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-gold to-caramel rounded-full transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            />
+        )}
+
+        {!hasLoyaltyProgress && (
+          <div className="mt-4 p-3 bg-secondary/30 rounded-lg">
+            <p className="text-sm text-muted-foreground">
+              <Star size={14} className="inline mr-1.5 text-gold" />
+              Book your first table to start earning loyalty points!
+            </p>
           </div>
-        </div>
+        )}
 
         {/* Mobile logout button */}
         <Button 
@@ -167,9 +220,23 @@ const WelcomeCard = ({ userName, stats, onLogout }: WelcomeCardProps) => {
 };
 
 const UserDashboard = () => {
-  const [activeTab] = useState<"overview" | "bookings" | "history">("overview");
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  // In production, these would come from database queries
+  // For now, start with empty arrays to show empty states
+  const [upcomingBookings] = useState<Booking[]>([]);
+  const [pastVisits] = useState<PastVisit[]>([]);
+  const [favorites] = useState<FavoriteItem[]>([]);
+  const [messages] = useState<Message[]>([]);
+  
+  // User stats - would come from database
+  const [userStats] = useState<UserStats>({
+    totalVisits: 0,
+    memberSince: "",
+    loyaltyPoints: 0,
+    nextReward: 300,
+  });
 
   const handleLogout = () => {
     logout();
@@ -177,11 +244,11 @@ const UserDashboard = () => {
   };
 
   const stats = useMemo(() => ({
-    upcomingBookings: mockUpcomingBookings.length,
-    confirmedBookings: mockUpcomingBookings.filter(b => b.status === "confirmed").length,
-    unreadMessages: mockMessages.filter(m => !m.read).length,
-    favorites: mockFavorites.length,
-  }), []);
+    upcomingBookings: upcomingBookings.length,
+    confirmedBookings: upcomingBookings.filter(b => b.status === "confirmed").length,
+    unreadMessages: messages.filter(m => !m.read).length,
+    favorites: favorites.length,
+  }), [upcomingBookings, messages, favorites]);
 
   return (
     <Layout>
@@ -198,7 +265,7 @@ const UserDashboard = () => {
               <motion.div variants={fadeUp()}>
                 <WelcomeCard 
                   userName={user?.name || "Guest"} 
-                  stats={mockUserStats} 
+                  stats={userStats} 
                   onLogout={handleLogout} 
                 />
               </motion.div>
@@ -260,44 +327,46 @@ const UserDashboard = () => {
                       </div>
                       <Link to="/bookings">
                         <Button variant="ghost" size="sm" className="text-xs">
-                          View All <ChevronRight size={14} className="ml-1" />
+                          Book Now <ChevronRight size={14} className="ml-1" />
                         </Button>
                       </Link>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    {mockUpcomingBookings.length > 0 ? (
-                      mockUpcomingBookings.map((booking) => (
-                        <div 
-                          key={booking.id} 
-                          className="flex items-center justify-between p-3 bg-background/50 rounded-xl border border-border/30"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-secondary">
-                              <Calendar size={16} className="text-primary" />
-                            </div>
-                            <div>
-                              <p className="font-medium text-sm">{booking.type}</p>
-                              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                                <Clock size={12} />
-                                <span>{booking.date} at {booking.time}</span>
-                                <span>•</span>
-                                <Users size={12} />
-                                <span>{booking.guests} guests</span>
+                  <CardContent>
+                    {upcomingBookings.length > 0 ? (
+                      <div className="space-y-3">
+                        {upcomingBookings.map((booking) => (
+                          <div 
+                            key={booking.id} 
+                            className="flex items-center justify-between p-3 bg-background/50 rounded-xl border border-border/30"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 rounded-lg bg-secondary">
+                                <Calendar size={16} className="text-primary" />
+                              </div>
+                              <div>
+                                <p className="font-medium text-sm">{booking.type}</p>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                                  <Clock size={12} />
+                                  <span>{booking.date} at {booking.time}</span>
+                                  <span>•</span>
+                                  <Users size={12} />
+                                  <span>{booking.guests} guests</span>
+                                </div>
                               </div>
                             </div>
+                            <StatusBadge status={booking.status} />
                           </div>
-                          <StatusBadge status={booking.status} />
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-6 text-muted-foreground">
-                        <Calendar size={32} className="mx-auto mb-2 opacity-50" />
-                        <p className="text-sm">No upcoming bookings</p>
-                        <Link to="/bookings">
-                          <Button variant="link" size="sm" className="mt-1">Book a table</Button>
-                        </Link>
+                        ))}
                       </div>
+                    ) : (
+                      <EmptyState 
+                        icon={Calendar}
+                        title="No upcoming bookings"
+                        description="You haven't made any reservations yet"
+                        actionLabel="Book a table"
+                        actionHref="/bookings"
+                      />
                     )}
                   </CardContent>
                 </Card>
@@ -312,32 +381,42 @@ const UserDashboard = () => {
                         <CardTitle className="text-lg font-serif">Recent Visits</CardTitle>
                         <CardDescription>Your visit history</CardDescription>
                       </div>
-                      <Badge variant="secondary" className="text-xs">
-                        <History size={12} className="mr-1" />
-                        {mockUserStats.totalVisits} total
-                      </Badge>
+                      {userStats.totalVisits > 0 && (
+                        <Badge variant="secondary" className="text-xs">
+                          <History size={12} className="mr-1" />
+                          {userStats.totalVisits} total
+                        </Badge>
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-2">
-                      {mockPastVisits.map((visit) => (
-                        <div 
-                          key={visit.id} 
-                          className="flex items-center justify-between py-2.5 border-b border-border/30 last:border-0"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
-                              <Coffee size={16} className="text-primary" />
+                    {pastVisits.length > 0 ? (
+                      <div className="space-y-2">
+                        {pastVisits.map((visit) => (
+                          <div 
+                            key={visit.id} 
+                            className="flex items-center justify-between py-2.5 border-b border-border/30 last:border-0"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
+                                <Coffee size={16} className="text-primary" />
+                              </div>
+                              <div>
+                                <p className="font-medium text-sm">{visit.type}</p>
+                                <p className="text-xs text-muted-foreground">{visit.date} • {visit.guests} guests</p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-medium text-sm">{visit.type}</p>
-                              <p className="text-xs text-muted-foreground">{visit.date} • {visit.guests} guests</p>
-                            </div>
+                            <p className="font-medium text-sm text-primary">{visit.spent}</p>
                           </div>
-                          <p className="font-medium text-sm text-primary">{visit.spent}</p>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <EmptyState 
+                        icon={History}
+                        title="No visit history"
+                        description="Your past visits will appear here"
+                      />
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
@@ -393,20 +472,30 @@ const UserDashboard = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-2">
-                      {mockFavorites.map((item) => (
-                        <div 
-                          key={item.id} 
-                          className="flex items-center justify-between py-2 px-3 bg-background/50 rounded-lg"
-                        >
-                          <div>
-                            <p className="font-medium text-sm">{item.name}</p>
-                            <p className="text-xs text-muted-foreground">{item.category}</p>
+                    {favorites.length > 0 ? (
+                      <div className="space-y-2">
+                        {favorites.map((item) => (
+                          <div 
+                            key={item.id} 
+                            className="flex items-center justify-between py-2 px-3 bg-background/50 rounded-lg"
+                          >
+                            <div>
+                              <p className="font-medium text-sm">{item.name}</p>
+                              <p className="text-xs text-muted-foreground">{item.category}</p>
+                            </div>
+                            <p className="text-sm font-medium">₹{item.price}</p>
                           </div>
-                          <p className="text-sm font-medium">₹{item.price}</p>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <EmptyState 
+                        icon={Heart}
+                        title="No favourites yet"
+                        description="Browse our menu to add items"
+                        actionLabel="View Menu"
+                        actionHref="/menu"
+                      />
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
@@ -428,27 +517,30 @@ const UserDashboard = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-2">
-                      {mockMessages.map((msg) => (
-                        <div 
-                          key={msg.id} 
-                          className={`flex items-center justify-between py-2.5 px-3 rounded-lg border ${
-                            msg.read 
-                              ? 'border-border/30 bg-background/30' 
-                              : 'border-amber-200 bg-amber-50'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            {!msg.read && <span className="w-2 h-2 rounded-full bg-amber-500" />}
-                            <div>
+                    {messages.length > 0 ? (
+                      <div className="space-y-2">
+                        {messages.map((msg) => (
+                          <div 
+                            key={msg.id}
+                            className={`p-3 rounded-lg border ${!msg.read ? 'bg-primary/5 border-primary/20' : 'bg-background/50 border-border/30'}`}
+                          >
+                            <div className="flex items-start justify-between gap-2">
                               <p className="font-medium text-sm">{msg.subject}</p>
-                              <p className="text-xs text-muted-foreground">{msg.date}</p>
+                              {!msg.read && (
+                                <span className="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-1.5" />
+                              )}
                             </div>
+                            <p className="text-xs text-muted-foreground mt-1">{msg.date}</p>
                           </div>
-                          <ChevronRight size={14} className="text-muted-foreground" />
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <EmptyState 
+                        icon={Inbox}
+                        title="No messages"
+                        description="Notifications will appear here"
+                      />
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
