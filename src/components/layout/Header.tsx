@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Coffee, User, LogIn } from "lucide-react";
-import { steamAnimation, smoothTransition } from "@/lib/animations";
+import { Menu, X, User, LogIn } from "lucide-react";
+import { smoothTransition } from "@/lib/animations";
+import logoWhite from "@/assets/logo-white.png";
 import { useAuth } from "@/contexts/AuthContext";
 
 const NAV_LINKS = [
@@ -108,25 +109,19 @@ const Header = () => {
 const Logo = memo(() => (
   <Link 
     to="/" 
-    className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg"
+    className="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg"
     aria-label="RD CAFE - Go to homepage"
   >
     <motion.div
-      className="relative"
-      whileHover={{ rotate: [0, -5, 5, 0] }}
-      transition={{ duration: 0.5 }}
-      aria-hidden="true"
+      whileHover={{ scale: 1.05 }}
+      transition={{ duration: 0.3 }}
     >
-      <Coffee size={26} className="text-[hsl(25,45%,35%)] transition-all duration-500" />
-      <motion.div
-        variants={steamAnimation}
-        animate="animate"
-        className="absolute -top-2 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full blur-sm bg-[hsl(30,25%,75%)]"
+      <img 
+        src={logoWhite} 
+        alt="RD CAFE Logo" 
+        className="h-10 md:h-12 w-auto invert brightness-0 sepia saturate-[300%] hue-rotate-[350deg]"
       />
     </motion.div>
-    <span className="text-xl md:text-2xl font-serif font-semibold tracking-wider text-foreground transition-all duration-500">
-      RD <span className="text-primary">CAFE</span>
-    </span>
   </Link>
 ));
 
@@ -372,7 +367,6 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
                 className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full font-serif font-semibold tracking-wide bg-primary text-primary-foreground shadow-card hover:bg-primary/90 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
                 role="menuitem"
               >
-                <Coffee size={18} aria-hidden="true" />
                 <span>Visit Us</span>
               </Link>
             </motion.li>
