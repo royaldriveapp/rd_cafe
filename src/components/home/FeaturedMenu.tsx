@@ -13,10 +13,10 @@ import croissantImage from "@/assets/croissant.jpg";
 import cakeImage from "@/assets/chocolate-cake.jpg";
 
 const featuredItems: MenuItem[] = [
-  { id: "f1", name: "Signature Latte", description: "Smooth espresso with velvety steamed milk, crafted with care", price: "$5.50", image: latteImage, category: "coffee" },
-  { id: "f2", name: "Single Origin Espresso", description: "Bold and refined—our carefully sourced house blend", price: "$4.00", image: espressoImage, category: "coffee" },
-  { id: "f3", name: "Buttery Croissant", description: "Freshly baked each morning with flaky, golden layers", price: "$4.50", image: croissantImage, category: "desserts" },
-  { id: "f4", name: "Chocolate Fondant", description: "Rich dark chocolate with a delicate finish", price: "$7.00", image: cakeImage, category: "desserts" },
+  { id: "f1", name: "Signature Latte", description: "Smooth espresso with velvety steamed milk, crafted with care", price: "$5.50", image: latteImage, category: "coffee", videoUrl: "https://www.youtube.com/watch?v=fN_iiDCxjPo" },
+  { id: "f2", name: "Single Origin Espresso", description: "Bold and refined—our carefully sourced house blend", price: "$4.00", image: espressoImage, category: "coffee", videoUrl: "https://www.youtube.com/watch?v=fN_iiDCxjPo" },
+  { id: "f3", name: "Buttery Croissant", description: "Freshly baked each morning with flaky, golden layers", price: "$4.50", image: croissantImage, category: "desserts", videoUrl: "https://www.youtube.com/watch?v=fN_iiDCxjPo" },
+  { id: "f4", name: "Chocolate Fondant", description: "Rich dark chocolate with a delicate finish", price: "$7.00", image: cakeImage, category: "desserts", videoUrl: "https://www.youtube.com/watch?v=fN_iiDCxjPo" },
 ];
 
 const itemVariants = fadeUp(30, 0.6);
