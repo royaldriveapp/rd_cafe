@@ -119,7 +119,7 @@ const Logo = memo(() => (
       <img 
         src={logoWhite} 
         alt="RD CAFE Logo" 
-        className="h-10 md:h-12 w-auto invert brightness-0 sepia saturate-[300%] hue-rotate-[350deg]"
+        className="h-10 md:h-12 w-auto invert brightness-0 sepia saturate-[800%] hue-rotate-[345deg] opacity-80"
       />
     </motion.div>
   </Link>
