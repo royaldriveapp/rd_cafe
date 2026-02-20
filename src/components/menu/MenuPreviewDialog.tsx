@@ -8,7 +8,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Play } from "lucide-react";
+
 
 function extractYouTubeId(url: string): string | null {
   const match = url.match(
@@ -27,34 +27,24 @@ const MenuPreviewDialog = memo(({ item, open, onOpenChange }: MenuPreviewDialogP
   if (!item) return null;
 
   const videoId = item.videoUrl ? extractYouTubeId(item.videoUrl) : null;
-  const thumbnailUrl = videoId
-    ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-    : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl p-0 overflow-hidden">
         {/* Video thumbnail or item image */}
-        {videoId && thumbnailUrl ? (
-          <a
-            href={item.videoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full relative group/thumb"
-          >
+        {videoId ? (
+          <div className="w-full">
             <AspectRatio ratio={16 / 9}>
-              <img
-                src={thumbnailUrl}
-                alt={`Watch ${item.name} video`}
-                className="w-full h-full object-cover"
+              <iframe
+                src={`https://www.youtube.com/embed/${videoId}?rel=0`}
+                title={item.name}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full border-0"
+                sandbox="allow-scripts allow-same-origin allow-presentation"
               />
-              <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover/thumb:bg-black/40 transition-colors">
-                <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover/thumb:scale-110 transition-transform">
-                  <Play size={28} className="text-white fill-white ml-1" />
-                </div>
-              </div>
             </AspectRatio>
-          </a>
+          </div>
         ) : item.image ? (
           <div className="w-full">
             <AspectRatio ratio={16 / 9}>
