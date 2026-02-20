@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
+import { Customer } from "@/types/admin";
+import IntegrationsTab from "@/components/admin/IntegrationsTab";
 import { motion, AnimatePresence } from "framer-motion";
 import { z } from "zod";
 import Layout from "@/components/layout/Layout";
@@ -58,7 +60,8 @@ import {
   ArrowDownRight,
   Inbox,
   FileText,
-  Utensils
+  Utensils,
+  Plug
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimit } from "@/hooks/useRateLimit";
@@ -218,6 +221,7 @@ const Admin = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   
   // Filter states
   const [bookingFilter, setBookingFilter] = useState<"all" | "pending" | "confirmed" | "cancelled">("all");
@@ -593,7 +597,7 @@ const Admin = () => {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6">
               <QuickStatCard 
                 label="Pending Bookings" 
                 value={stats.pendingBookings.toString()} 
@@ -619,6 +623,12 @@ const Admin = () => {
                 icon={Coffee} 
                 iconColor="text-primary"
               />
+              <QuickStatCard 
+                label="Customers" 
+                value={customers.length.toString()} 
+                icon={Users} 
+                iconColor="text-violet-600"
+              />
             </div>
           </div>
         </section>
@@ -626,7 +636,7 @@ const Admin = () => {
         {/* Main Content */}
         <section className="container-cafe py-6">
           <Tabs defaultValue="bookings" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 max-w-md">
+            <TabsList className="grid w-full grid-cols-4 max-w-lg">
               <TabsTrigger value="bookings" className="gap-1.5">
                 <CalendarDays size={14} />
                 Bookings
@@ -648,6 +658,10 @@ const Admin = () => {
               <TabsTrigger value="menu" className="gap-1.5">
                 <Utensils size={14} />
                 Menu
+              </TabsTrigger>
+              <TabsTrigger value="integrations" className="gap-1.5">
+                <Plug size={14} />
+                Integrations
               </TabsTrigger>
             </TabsList>
 
@@ -982,6 +996,11 @@ const Admin = () => {
                   )}
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Integrations Tab */}
+            <TabsContent value="integrations">
+              <IntegrationsTab customers={customers} setCustomers={setCustomers} />
             </TabsContent>
           </Tabs>
         </section>
