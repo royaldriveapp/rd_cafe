@@ -1,64 +1,35 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { staggerContainer, fadeUp, viewportOnce, viewportOnceSmall } from "@/lib/animations";
+import MenuItemCard from "@/components/menu/MenuItemCard";
+import MenuPreviewDialog from "@/components/menu/MenuPreviewDialog";
+import type { MenuItem } from "@/types/menu";
 import latteImage from "@/assets/coffee-latte.jpg";
 import espressoImage from "@/assets/espresso.jpg";
 import croissantImage from "@/assets/croissant.jpg";
 import cakeImage from "@/assets/chocolate-cake.jpg";
 
-const featuredItems = [
-  { name: "Signature Latte", description: "Smooth espresso with velvety steamed milk, crafted with care", price: "$5.50", image: latteImage, category: "Signature" },
-  { name: "Single Origin Espresso", description: "Bold and refined—our carefully sourced house blend", price: "$4.00", image: espressoImage, category: "Signature" },
-  { name: "Buttery Croissant", description: "Freshly baked each morning with flaky, golden layers", price: "$4.50", image: croissantImage, category: "Pastry" },
-  { name: "Chocolate Fondant", description: "Rich dark chocolate with a delicate finish", price: "$7.00", image: cakeImage, category: "Dessert" },
-] as const;
+const featuredItems: MenuItem[] = [
+  { id: "f1", name: "Signature Latte", description: "Smooth espresso with velvety steamed milk, crafted with care", price: "$5.50", image: latteImage, category: "coffee" },
+  { id: "f2", name: "Single Origin Espresso", description: "Bold and refined—our carefully sourced house blend", price: "$4.00", image: espressoImage, category: "coffee" },
+  { id: "f3", name: "Buttery Croissant", description: "Freshly baked each morning with flaky, golden layers", price: "$4.50", image: croissantImage, category: "desserts" },
+  { id: "f4", name: "Chocolate Fondant", description: "Rich dark chocolate with a delicate finish", price: "$7.00", image: cakeImage, category: "desserts" },
+];
 
 const itemVariants = fadeUp(30, 0.6);
 
-interface MenuItemCardProps {
-  name: string;
-  description: string;
-  price: string;
-  image: string;
-  category: string;
-}
-
-const MenuItemCard = memo(({ name, description, price, image, category }: MenuItemCardProps) => (
-  <motion.div variants={itemVariants} className="group">
-    <div className="h-full card-menu-gradient card-interactive">
-      <div className="relative aspect-square img-zoom rounded-t-2xl overflow-hidden">
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
-        <div className="absolute top-4 left-4">
-          <span className="px-3 py-1 text-xs tracking-wide uppercase bg-background/90 backdrop-blur-sm rounded-full text-foreground badge-pop">
-            {category}
-          </span>
-        </div>
-      </div>
-      <CardContent className="pt-6">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="font-serif text-xl">{name}</h3>
-          <span className="text-primary font-medium">{price}</span>
-        </div>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {description}
-        </p>
-      </CardContent>
-    </div>
-  </motion.div>
-));
-
-MenuItemCard.displayName = "MenuItemCard";
-
 const FeaturedMenu = () => {
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleCardClick = (item: MenuItem) => {
+    setSelectedItem(item);
+    setDialogOpen(true);
+  };
+
   return (
     <section className="section-padding bg-secondary/30">
       <div className="container-cafe">
@@ -85,10 +56,15 @@ const FeaturedMenu = () => {
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnceSmall}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"
         >
           {featuredItems.map((item) => (
-            <MenuItemCard key={item.name} {...item} />
+            <MenuItemCard
+              key={item.id}
+              item={item}
+              variants={itemVariants}
+              onClick={handleCardClick}
+            />
           ))}
         </motion.div>
 
@@ -107,6 +83,12 @@ const FeaturedMenu = () => {
           </Button>
         </motion.div>
       </div>
+
+      <MenuPreviewDialog
+        item={selectedItem}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </section>
   );
 };
