@@ -7,8 +7,8 @@ import cakeImage from "@/assets/chocolate-cake.jpg";
 // Local data — swap with fetch/Supabase calls when ready
 const localMenuItems: MenuItem[] = [
   // Coffee
-  { id: "1", name: "Signature Latte", description: "Smooth espresso with silky steamed milk and artisan latte art", price: "$5.50", category: "coffee", image: latteImage },
-  { id: "2", name: "Classic Espresso", description: "Rich, bold, and perfectly extracted single origin beans", price: "$4.00", category: "coffee", image: espressoImage },
+  { id: "1", name: "Signature Latte", description: "Smooth espresso with silky steamed milk and artisan latte art", price: "$5.50", category: "coffee", image: latteImage, videoUrl: "https://www.youtube.com/watch?v=ox-lfnR2MKE" },
+  { id: "2", name: "Classic Espresso", description: "Rich, bold, and perfectly extracted single origin beans", price: "$4.00", category: "coffee", image: espressoImage, videoUrl: "https://www.youtube.com/watch?v=ox-lfnR2MKE" },
   { id: "3", name: "Cappuccino", description: "Perfect balance of espresso, steamed milk, and velvety foam", price: "$5.00", category: "coffee" },
   { id: "4", name: "Flat White", description: "Double ristretto with microfoam for a creamy finish", price: "$5.25", category: "coffee" },
   { id: "5", name: "Pour Over", description: "Hand-crafted single origin coffee, brewed to perfection", price: "$6.00", category: "coffee" },
