@@ -1,8 +1,8 @@
 import type { Variants, Transition, Easing } from "framer-motion";
 
-// Shared easing curves
+// Shared easing curves — silkier defaults
 export const easeInOut: Easing = [0.42, 0, 0.58, 1];
-export const easeOut: Easing = [0.25, 0.1, 0.25, 1];
+export const easeOut: Easing = [0.25, 0.46, 0.45, 0.94];
 
 // Standard stagger container for lists/grids
 export const staggerContainer = (staggerChildren = 0.1): Variants => ({
@@ -19,17 +19,17 @@ export const fadeUpVariants: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
+    transition: { duration: 0.6, ease: easeOut },
   },
 };
 
 // Fade up with configurable distance
-export const fadeUp = (y = 20, duration = 0.5): Variants => ({
+export const fadeUp = (y = 20, duration = 0.6): Variants => ({
   hidden: { opacity: 0, y },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration, ease: "easeOut" },
+    transition: { duration, ease: easeOut },
   },
 });
 
@@ -39,7 +39,7 @@ export const slideIn = (direction: "left" | "right" = "left", distance = 30): Va
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.8, ease: "easeOut" },
+    transition: { duration: 0.8, ease: easeOut },
   },
 });
 
@@ -64,8 +64,14 @@ export const springTransition: Transition = {
   damping: 30,
 };
 
+export const smoothSpring: Transition = {
+  type: "spring",
+  stiffness: 300,
+  damping: 35,
+};
+
 export const smoothTransition: Transition = {
-  duration: 0.4,
+  duration: 0.5,
   ease: easeOut,
 };
 
