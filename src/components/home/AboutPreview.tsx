@@ -83,15 +83,11 @@ const AboutPreview = () => {
             </div>
             
             {/* Floating accents */}
-            <motion.div
-              animate={{ y: [0, -15, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-6 -left-6 w-24 h-24 rounded-2xl bg-caramel/20 backdrop-blur-sm border border-caramel/30"
+            <div
+              className="absolute -bottom-6 -left-6 w-24 h-24 rounded-2xl bg-caramel/20 backdrop-blur-sm border border-caramel/30 animate-[float-slow_4s_ease-in-out_infinite]"
             />
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-              className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-olive/15 backdrop-blur-sm border border-olive/25"
+            <div
+              className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-olive/15 backdrop-blur-sm border border-olive/25 animate-[float-reverse_3.5s_ease-in-out_0.5s_infinite]"
             />
           </motion.div>
         </div>
