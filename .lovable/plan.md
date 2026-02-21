@@ -1,72 +1,74 @@
 
 
-# Admin Panel: Integrations & API Management Hub
+# Smoother Animations + Flip Cards with Nutritional Info
 
 ## Overview
-Add a new "Integrations" tab to the Admin Dashboard that serves as a central hub for managing external platform connections (Reelo, PetPooja, etc.) and provides an API-style interface for full CRUD operations on bookings, customers, and menu data.
+Two main improvements: (1) polish all animations across the site for buttery-smooth transitions, and (2) add a 3D flip effect to every menu card so hovering/tapping reveals ingredients and calorie info on the back.
 
-## What This Adds
+---
 
-### 1. New "Integrations" Tab in Admin Dashboard
-A fourth tab alongside Bookings, Messages, and Menu with two sub-sections:
+## 1. Flip Card Effect on Menu Items
 
-**A. Data Management (API Console)**
-- A unified interface to **add, edit, delete, and search** across all data types:
-  - **Bookings**: Full CRUD with all fields (type, date, guests, status, contact info, special requests)
-  - **Customers**: A new customer directory - add/edit/remove customer profiles (name, email, phone, visit history, notes, loyalty status)
-  - **Menu Items**: Enhanced editing with image URLs, video URLs, pricing, availability
-- Each section gets a table view with inline actions and a "quick add" form
-- Search and filter capabilities across all records
-- Bulk actions (export data, bulk status update, bulk delete)
+### How it works
+- Each menu card becomes a 3D flip container using CSS `perspective` and `transform-style: preserve-3d`
+- **Front face**: The existing card (image + name + price + description)
+- **Back face**: A warm-toned card showing ingredients list, calorie count, and dietary tags (vegan, gluten-free, etc.)
+- **Trigger**: Hover on desktop, tap on mobile (toggle flip state)
+- Clicking the back side still opens the preview dialog
 
-**B. Platform Connections**
-Cards for connecting external restaurant management platforms:
+### Data changes
+Add new optional fields to the `MenuItem` type:
+- `ingredients?: string[]` — e.g. `["Espresso", "Steamed Milk", "Vanilla Syrup"]`
+- `calories?: number` — e.g. `220`
+- `dietaryTags?: string[]` — e.g. `["Vegetarian", "Contains Dairy"]`
 
-- **Reelo** - Customer loyalty, CRM, WhatsApp marketing, feedback & reviews
-- **PetPooja** - POS, billing, inventory management, online ordering
-- **Custom Webhook** - Connect any platform via webhook URL (Zapier-style)
+Populate these fields in `menuService.ts` and `FeaturedMenu.tsx` for all items.
 
-Each platform card shows:
-  - Platform name, logo placeholder, and description
-  - Connection status (Connected / Not Connected)
-  - API Key / Webhook URL input field
-  - Connect / Disconnect button
-  - Connection settings saved to localStorage (for demo; production would use Supabase secrets)
+### Card structure
+The `MenuItemCard` component will wrap front and back in a perspective container:
+- Outer div: `perspective: 1200px`
+- Inner div: `transform-style: preserve-3d`, rotates `rotateY(180deg)` on flip
+- Front div: `backface-visibility: hidden` (existing card content)
+- Back div: `backface-visibility: hidden`, `rotateY(180deg)` (nutritional info)
+- Smooth 0.6s cubic-bezier transition
 
-### 2. New Customer Data Model
-A `Customer` interface to track customer information separately from bookings:
-```
-- id, name, email, phone
-- totalVisits, lastVisit
-- loyaltyPoints, membershipTier
-- tags (e.g., "VIP", "Regular", "Birthday Club")
-- notes
-```
+### Back face design
+- Warm gradient background matching the cafe aesthetic
+- Item name at top (smaller)
+- "Ingredients" section with a clean list
+- Calorie badge (e.g., "220 kcal") with a subtle icon
+- Dietary tags as small pills/badges
+- A subtle "Tap for details" hint at the bottom
 
-### 3. Updated Quick Stats
-Add a "Customers" stat card to the dashboard header showing total customers count.
+---
+
+## 2. Smoother Global Animations
+
+### CSS transition improvements
+- Increase the global transition to include `box-shadow`, `transform`, and `opacity` for smoother interactive feedback
+- Use `cubic-bezier(0.4, 0, 0.2, 1)` (Material ease) instead of plain `ease` for more natural motion
+
+### Framer Motion improvements in `lib/animations.ts`
+- Switch default easing to a custom cubic-bezier `[0.25, 0.46, 0.45, 0.94]` for silkier fade-ups
+- Slightly increase durations (0.5 to 0.6s for fade-ups, 0.6 to 0.8s for section headers)
+- Add a new `smoothSpring` transition preset with lower stiffness (300) and higher damping (35) for bouncier but controlled motion
+
+### Page-level transitions
+- Wrap route content with `AnimatePresence` and add a subtle fade transition (opacity 0 to 1, 0.3s) when navigating between pages
+
+---
 
 ## Technical Details
 
-### Files to Create
-- `src/components/admin/IntegrationsTab.tsx` - Main integrations tab with sub-tabs for Data Management and Platform Connections
-- `src/components/admin/DataManager.tsx` - CRUD table interface for bookings/customers/menu
-- `src/components/admin/PlatformConnections.tsx` - Platform connection cards (Reelo, PetPooja, Custom Webhook)
-- `src/components/admin/CustomerManager.tsx` - Customer directory with add/edit/search
-- `src/types/admin.ts` - Customer and Integration types
+### Files to modify
+- **`src/types/menu.ts`** — Add `ingredients`, `calories`, `dietaryTags` fields
+- **`src/services/menuService.ts`** — Populate nutritional data for all 23 menu items
+- **`src/components/home/FeaturedMenu.tsx`** — Add nutritional data to the 4 featured items
+- **`src/components/menu/MenuItemCard.tsx`** — Rebuild as a 3D flip card with front/back faces
+- **`src/lib/animations.ts`** — Smoother easing curves, new spring preset, flip variants
+- **`src/index.css`** — Add flip card CSS utilities, smoother global transitions
+- **`src/App.tsx`** — Add `AnimatePresence` around routes for page transitions
 
-### Files to Modify
-- `src/pages/Admin.tsx` - Add the Integrations tab, Customer state, updated stats grid (5 stats instead of 4)
-
-### Architecture
-- All data remains in React state (same pattern as existing bookings/messages/menu)
-- Platform connections store API keys/webhook URLs in localStorage for demo
-- Webhook integration uses `fetch` with `no-cors` mode (same as Zapier pattern)
-- Customer data can be linked to bookings via email matching
-
-### UI Pattern
-- Follows existing Admin dashboard styling (cards, badges, modals, filters)
-- Sub-tabs within the Integrations tab using the same `Tabs` component
-- Platform cards use the existing `Card` component with status badges
-- Data tables use a clean card-based layout consistent with the bookings list
+### No new dependencies required
+Everything uses existing `framer-motion` + CSS transforms.
 
