@@ -132,13 +132,6 @@
     @apply border-border;
   }
 
-  /* Kill all transitions during theme switch so overlay handles the visual */
-  .theme-switching,
-  .theme-switching *,
-  .theme-switching *::before,
-  .theme-switching *::after {
-    transition: none !important;
-  }
 
   html {
     scroll-behavior: smooth;
