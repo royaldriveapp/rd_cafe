@@ -228,13 +228,12 @@ const CTAButton = memo(() => {
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-serif font-semibold text-sm tracking-wide bg-primary text-primary-foreground shadow-soft hover:bg-primary/90 hover:shadow-card transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
         >
           <span>Visit Us</span>
-          <motion.span
-            animate={{ x: [0, 3, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          <span
+            className="inline-block animate-[nudge-right_1.5s_ease-in-out_infinite]"
             aria-hidden="true"
           >
             →
-          </motion.span>
+          </span>
         </Link>
       </motion.div>
       <ThemeToggle />
