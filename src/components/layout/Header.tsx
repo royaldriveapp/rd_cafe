@@ -5,6 +5,7 @@ import { Menu, X, User, LogIn } from "lucide-react";
 import { smoothTransition } from "@/lib/animations";
 import logoWhite from "@/assets/logo-white.png";
 import { useAuth } from "@/contexts/AuthContext";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const NAV_LINKS = [
   { name: "Home", path: "/" },
@@ -77,8 +78,8 @@ const Header = () => {
           className={`
             mx-auto max-w-7xl rounded-2xl transition-all duration-700 ease-out
             ${isScrolled
-              ? "bg-[hsl(40,30%,98%)]/95 backdrop-blur-xl shadow-[0_2px_24px_-4px_rgba(120,90,60,0.08),0_1px_6px_-1px_rgba(120,90,60,0.04)] border border-[hsl(35,20%,92%)]"
-              : "bg-[hsl(40,25%,99%)]/80 backdrop-blur-lg shadow-[0_4px_30px_-8px_rgba(0,0,0,0.08)] border border-white/40"
+              ? "bg-background/95 backdrop-blur-xl shadow-card border border-border"
+              : "bg-background/80 backdrop-blur-lg shadow-soft border border-border/40"
             }
           `}
           aria-label="Main navigation"
@@ -159,14 +160,14 @@ const DesktopNav = memo(({ currentPath, hoveredLink, onHoverStart, onHoverEnd }:
           {currentPath === link.path && (
             <motion.div
               layoutId="activeNav"
-              className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[hsl(25,50%,45%)]"
+              className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary"
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
               aria-hidden="true"
             />
           )}
           
           <motion.span 
-            className="absolute -bottom-1 left-0 h-[2px] rounded-full bg-[hsl(25,35%,55%)]"
+            className="absolute -bottom-1 left-0 h-[2px] rounded-full bg-primary/70"
             initial={{ width: 0, opacity: 0 }}
             animate={{ 
               width: hoveredLink === link.path && currentPath !== link.path ? "100%" : 0,
@@ -187,7 +188,7 @@ const CTAButton = memo(() => {
   const { user } = useAuth();
   
   return (
-    <div className="hidden lg:flex items-center gap-3">
+    <div className="hidden lg:flex items-center gap-2">
       {user ? (
         <motion.div
           whileHover={{ scale: 1.03, y: -1 }}
@@ -236,6 +237,7 @@ const CTAButton = memo(() => {
           </motion.span>
         </Link>
       </motion.div>
+      <ThemeToggle />
     </div>
   );
 });
@@ -250,7 +252,7 @@ interface MobileMenuToggleProps {
 const MobileMenuToggle = memo(({ isOpen, onToggle }: MobileMenuToggleProps) => (
   <motion.button
     onClick={onToggle}
-    className="lg:hidden p-2.5 rounded-xl text-[hsl(20,25%,30%)] hover:bg-[hsl(35,25%,94%)] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+    className="lg:hidden p-2.5 rounded-xl text-foreground hover:bg-secondary transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
     aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
     aria-expanded={isOpen}
     aria-controls="mobile-menu"
@@ -319,7 +321,7 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute right-0 top-0 bottom-0 w-[280px] bg-[hsl(35,28%,97%)] shadow-[-10px_0_40px_-10px_rgba(0,0,0,0.15)]"
+          className="absolute right-0 top-0 bottom-0 w-[280px] bg-background shadow-elevated"
           aria-label="Mobile navigation"
         >
           <ul className="p-6 pt-8 space-y-1" role="menu">
@@ -344,7 +346,7 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
                   {currentPath === link.path && (
                     <motion.span
                       layoutId="mobileActive"
-                      className="w-1.5 h-1.5 rounded-full bg-[hsl(30,50%,45%)]"
+                      className="w-1.5 h-1.5 rounded-full bg-primary"
                       aria-hidden="true"
                     />
                   )}
@@ -354,6 +356,16 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
             ))}
             
             <MobileAuthButton />
+
+            <motion.li
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.48, duration: 0.4 }}
+              className="flex justify-center pt-2"
+              role="none"
+            >
+              <ThemeToggle />
+            </motion.li>
             
             <motion.li
               initial={{ opacity: 0, y: 20 }}
