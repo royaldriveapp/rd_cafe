@@ -8,6 +8,9 @@ export interface MenuItem {
   category: MenuCategory;
   image?: string;
   videoUrl?: string;
+  ingredients?: string[];
+  calories?: number;
+  dietaryTags?: string[];
 }
 
 export type CreateMenuItemInput = Omit<MenuItem, "id">;
