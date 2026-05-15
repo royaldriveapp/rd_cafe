@@ -1,0 +1,19 @@
+import { defineConfig } from "sanity";
+import { deskTool } from "sanity/desk";
+import { visionTool } from "@sanity/vision";
+import { schemaTypes } from "./schemaTypes";
+
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID || "your-project-id";
+const dataset = process.env.SANITY_STUDIO_DATASET || "production";
+
+export default defineConfig({
+  name: "default",
+  title: "RD Cafe Content Studio",
+  projectId,
+  dataset,
+  basePath: "/cafe-admin/studio",
+  plugins: [deskTool(), visionTool()],
+  schema: {
+    types: schemaTypes,
+  },
+});

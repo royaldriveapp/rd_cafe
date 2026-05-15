@@ -1,0 +1,22 @@
+{
+  "name": "rd-cafe-sanity-studio",
+  "private": true,
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=20 <25"
+  },
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "seed:menu": "node scripts/generate-menu-seed.mjs && npx sanity datasets import seed-data/menu.ndjson --dataset production --replace",
+    "seed:all": "node scripts/generate-menu-seed.mjs && node scripts/generate-site-seed.mjs && npx sanity datasets import seed-data/site-content.ndjson --dataset production --replace"
+  },
+  "dependencies": {
+    "@sanity/vision": "^5.25.0",
+    "react": "^19.2.2",
+    "react-dom": "^19.2.2",
+    "sanity": "^5.25.0",
+    "styled-components": "^6.1.19"
+  }
+}

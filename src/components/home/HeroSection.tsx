@@ -1,146 +1,67 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { Link } from "react-router-dom";
-import { useRef } from "react";
-import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-cafe.jpg";
 
 const HeroSection = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"]
-  });
-
-  // 3D spatial zoom transforms
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.5]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const z = useTransform(scrollYProgress, [0, 1], [0, -500]);
-  
-  // Text layers move at different speeds for depth
-  const titleY = useTransform(scrollYProgress, [0, 1], [0, -150]);
-  const subtitleY = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const buttonsY = useTransform(scrollYProgress, [0, 1], [0, -50]);
-  const welcomeY = useTransform(scrollYProgress, [0, 1], [0, -200]);
-
   return (
-    <section 
-      ref={containerRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
-      style={{ perspective: "1000px" }}
+    <section
+      className="relative flex min-h-screen items-center overflow-hidden"
       aria-labelledby="hero-heading"
     >
-      {/* Background Image with zoom effect - LCP optimized */}
-      <motion.div 
-        className="absolute inset-0"
-        style={{ 
-          scale,
-          transformStyle: "preserve-3d",
-        }}
-        aria-hidden="true"
-      >
+      <div className="absolute inset-0" aria-hidden="true">
         <img
           src={heroImage}
           alt=""
-          className="w-full h-full object-cover"
+          className="h-full w-full object-cover"
           loading="eager"
-          fetchPriority="high"
+          fetchpriority="high"
           decoding="async"
           width={1920}
           height={1080}
           role="presentation"
         />
         <div className="absolute inset-0 hero-overlay" />
-      </motion.div>
+        <div className="absolute inset-0 hero-grain opacity-70 mix-blend-soft-light" />
+      </div>
 
-      {/* Content with 3D layered depth */}
-      <motion.div 
-        className="relative z-10 container-cafe text-center text-primary-foreground"
-        style={{ 
-          opacity,
-          z,
-          transformStyle: "preserve-3d",
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="max-w-3xl mx-auto"
-          style={{ transformStyle: "preserve-3d" }}
-        >
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            style={{ y: welcomeY }}
-            className="text-sm md:text-base tracking-[0.3em] uppercase mb-6 text-primary-foreground/80"
-          >
-            Welcome to
-          </motion.p>
-          
-          <motion.h1
-            id="hero-heading"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            style={{ y: titleY }}
-            className="font-serif text-5xl md:text-7xl lg:text-8xl font-medium mb-6"
-          >
-            RD CAFE
-          </motion.h1>
-          
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            style={{ y: subtitleY }}
-            className="text-lg md:text-xl lg:text-2xl font-light text-primary-foreground/90 max-w-xl mx-auto mb-10 leading-relaxed"
-          >
-            A refined destination for discerning guests—private lounges, business facilities, and signature offerings in a welcoming space.
-          </motion.p>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-            style={{ y: buttonsY }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <Button variant="hero" size="xl" asChild>
-              <Link to="/menu">
-                Explore Menu
+      <div className="relative z-10 flex min-h-screen w-full items-center">
+        <div className="container-cafe">
+          <div className="hero-copy max-w-[640px] text-center text-primary-foreground md:text-left">
+            <p className="hero-tagline font-display">Where every visit is an occasion.</p>
+
+            <h1
+              id="hero-heading"
+              className="hero-title font-serif"
+            >
+              RD CAFÉ
+            </h1>
+
+            <p className="hero-subtext font-sohne">
+              Private lounges. Business facilities. Signature offerings.
+            </p>
+
+            <div className="hero-actions">
+              <Link to="/menu" className="hero-cta-primary font-sohne">
+                <span>Explore the Menu</span>
                 <ArrowRight size={18} aria-hidden="true" />
               </Link>
-            </Button>
-            <Button 
-              variant="outline" 
-              size="xl" 
-              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:border-primary-foreground/50"
-              asChild
-            >
-              <Link to="/about">Our Story</Link>
-            </Button>
-          </motion.div>
-        </motion.div>
-      </motion.div>
 
-      {/* Scroll Indicator - decorative */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
-        style={{ opacity }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+              <Link to="/about" className="hero-cta-secondary font-sohne">
+                Our Story
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 sm:block"
         aria-hidden="true"
       >
-        <div
-          className="w-6 h-10 rounded-full border-2 border-primary-foreground/30 flex items-start justify-center pt-2 animate-[float-reverse_1.5s_ease-in-out_infinite]"
-        >
-          <div className="w-1.5 h-3 rounded-full bg-primary-foreground/50" />
+        <div className="flex h-10 w-6 items-start justify-center rounded-full border-2 border-[#F5ECD7]/28 pt-2 animate-[float-reverse_1.5s_ease-in-out_infinite]">
+          <div className="h-3 w-1.5 rounded-full bg-[#C49A3C]/70" />
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };

@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Coffee, Loader2, Mail, Lock, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
+const demoAuthEnabled = import.meta.env.VITE_ENABLE_DEMO_AUTH === "true";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +25,47 @@ const Login = () => {
   if (user) {
     navigate(from, { replace: true });
     return null;
+  }
+
+  if (!demoAuthEnabled) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-cream/20 to-background p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md relative z-10"
+        >
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to home
+          </Link>
+
+          <Card className="border-border/50 shadow-xl bg-card/95 backdrop-blur-sm">
+            <CardHeader className="text-center pb-2">
+              <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <Lock className="w-8 h-8 text-primary" />
+              </div>
+              <CardTitle className="font-serif text-2xl">Member Login Disabled</CardTitle>
+              <CardDescription>
+                This website no longer uses demo client-side sign-in for production access.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                Content editing now happens through the protected Sanity workspace.
+              </p>
+              <Button asChild className="w-full">
+                <Link to="/cafe-admin">Go to Cafe Admin</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    );
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

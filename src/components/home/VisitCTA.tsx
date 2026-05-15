@@ -1,9 +1,11 @@
 import { memo } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MapPin, Clock, ArrowRight } from "lucide-react";
 import { fadeUp } from "@/lib/animations";
+import { useSiteSettings } from "@/hooks/useContent";
+import { getContentIcon } from "@/lib/contentIcons";
+import { RD_CAFE_MAPS_URL } from "@/data/siteContent";
 
 const cardVariants = fadeUp(30, 0.8);
 
@@ -14,14 +16,14 @@ interface InfoCardProps {
 }
 
 const InfoCard = memo(({ icon: Icon, title, children }: InfoCardProps) => (
-  <div className="group p-6 lg:p-8 card-gradient-dark card-interactive">
+  <div className="group card-gradient-dark card-interactive p-5 sm:p-6 lg:p-8">
     <div className="flex items-start gap-4 relative z-10">
       <div className="p-3 rounded-xl bg-gold/20 transition-colors duration-300 group-hover:bg-gold/30">
         <Icon className="text-gold icon-bounce" size={24} />
       </div>
       <div>
-        <h3 className="font-serif text-xl mb-2 text-espresso-foreground">{title}</h3>
-        <div className="text-espresso-foreground/70">{children}</div>
+        <h3 className="mb-2 font-serif text-lg text-espresso-foreground sm:text-xl">{title}</h3>
+        <div className="text-sm leading-7 text-espresso-foreground/70 sm:text-base">{children}</div>
       </div>
     </div>
   </div>
@@ -30,6 +32,9 @@ const InfoCard = memo(({ icon: Icon, title, children }: InfoCardProps) => (
 InfoCard.displayName = "InfoCard";
 
 const VisitCTA = () => {
+  const { data: siteSettings } = useSiteSettings();
+  if (!siteSettings) return null;
+
   return (
     <section className="section-padding bg-espresso text-espresso-foreground overflow-hidden relative">
       {/* Decorative elements */}
@@ -42,29 +47,34 @@ const VisitCTA = () => {
       </div>
 
       <div className="container-cafe relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-20">
           {/* Content */}
           <motion.div
             variants={cardVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
+            className="text-center lg:text-left"
           >
-            <span className="text-sm tracking-[0.3em] uppercase text-gold mb-4 block">
-              Plan Your Visit
+            <span className="mb-4 block text-sm uppercase tracking-[0.24em] text-gold sm:tracking-[0.3em]">
+              {siteSettings.visitCta.eyebrow}
             </span>
-            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-8 leading-tight">
-              We'd Love to <span className="text-gold italic">Welcome You</span>
+            <h2 className="mb-6 font-serif text-[2.65rem] leading-[0.98] sm:text-5xl lg:mb-8 lg:text-6xl">
+              {siteSettings.visitCta.title} <span className="text-gold italic">{siteSettings.visitCta.highlightedText}</span>
             </h2>
-            <p className="text-espresso-foreground/70 text-lg leading-relaxed mb-10 max-w-lg">
-              Whether for a quiet morning coffee, a business meeting in our private lounge, or an evening with loved ones—your table is ready.
+            <p className="mx-auto mb-8 max-w-lg text-base leading-relaxed text-espresso-foreground/70 sm:text-lg lg:mx-0 lg:mb-10">
+              {siteSettings.visitCta.description}
             </p>
             
-            <Button variant="hero" size="xl" asChild className="group glow-hover">
-              <Link to="/contact">
-                Get Directions
+            <Button variant="hero" size="xl" asChild className="group glow-hover w-full sm:w-auto">
+              <a
+                href={siteSettings.visitCta.buttonLink || RD_CAFE_MAPS_URL}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {siteSettings.visitCta.buttonLabel}
                 <ArrowRight size={18} className="arrow-slide" />
-              </Link>
+              </a>
             </Button>
           </motion.div>
 
@@ -76,19 +86,18 @@ const VisitCTA = () => {
             viewport={{ once: true }}
             className="space-y-6"
           >
-            <InfoCard icon={MapPin} title="Find Us">
-              <p>
-                123 Cozy Lane, Downtown District<br />
-                City 10001
-              </p>
-            </InfoCard>
-
-            <InfoCard icon={Clock} title="Hours">
-              <div className="space-y-1">
-                <p>Monday – Friday: 7:00 AM – 9:00 PM</p>
-                <p>Saturday – Sunday: 8:00 AM – 10:00 PM</p>
-              </div>
-            </InfoCard>
+            {siteSettings.visitCta.infoCards.map((card) => {
+              const Icon = getContentIcon(card.iconKey) as typeof MapPin;
+              return (
+                <InfoCard key={card.title} icon={Icon} title={card.title}>
+                  <div className="space-y-1">
+                    {card.lines.map((line) => (
+                      <p key={line}>{line}</p>
+                    ))}
+                  </div>
+                </InfoCard>
+              );
+            })}
           </motion.div>
         </div>
       </div>

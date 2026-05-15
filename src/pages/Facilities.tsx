@@ -2,6 +2,8 @@ import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useFacilitiesPageContent } from "@/hooks/useContent";
+import { getContentIcon } from "@/lib/contentIcons";
 import { 
   Zap, 
   Car, 
@@ -153,6 +155,34 @@ const itemVariants = {
 };
 
 const Facilities = () => {
+  const { data: facilitiesContent } = useFacilitiesPageContent();
+  const convenienceIconKeys = ["mapPin", "car", "zap", "clock"];
+  const hourIconKeys = ["sunrise", "moon", "calendar"];
+  const spaceIconKeys = ["doorOpen", "heart", "moon", "shieldCheck"];
+  const qualityIconKeys = ["award", "ban", "leaf", "sparkles"];
+  const convenienceItems = facilitiesContent?.convenienceSection.items ?? convenienceFeatures.map((feature, index) => ({
+    iconKey: convenienceIconKeys[index] ?? "mapPin",
+    title: feature.title,
+    description: feature.description,
+  }));
+  const hoursItems = facilitiesContent?.hoursSection.items ?? diningHours.map((slot, index) => ({
+    iconKey: hourIconKeys[index] ?? "clock",
+    title: slot.title,
+    time: slot.time,
+    description: slot.description,
+  }));
+  const spacesItems = facilitiesContent?.spacesSection.items ?? comfortFeatures.map((feature, index) => ({
+    iconKey: spaceIconKeys[index] ?? "doorOpen",
+    title: feature.title,
+    description: feature.description,
+    highlight: feature.highlight,
+  }));
+  const qualityItems = facilitiesContent?.qualitySection.items ?? qualityPrinciples.map((principle, index) => ({
+    iconKey: qualityIconKeys[index] ?? "award",
+    title: principle.title,
+    description: principle.description,
+  }));
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -195,9 +225,9 @@ const Facilities = () => {
             transition={{ duration: 0.5 }}
             className="mb-12"
           >
-            <p className="text-sm tracking-[0.2em] uppercase text-gold mb-3">Convenience</p>
+            <p className="text-sm tracking-[0.2em] uppercase text-gold mb-3">{facilitiesContent?.convenienceSection.eyebrow ?? "Convenience"}</p>
             <h2 className="font-serif text-3xl md:text-4xl font-medium text-foreground">
-              Easy Access & Modern Amenities
+              {facilitiesContent?.convenienceSection.title ?? "Easy Access & Modern Amenities"}
             </h2>
           </motion.div>
 
@@ -208,14 +238,16 @@ const Facilities = () => {
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
-            {convenienceFeatures.map((feature, index) => (
+            {convenienceItems.map((feature, index) => {
+              const Icon = getContentIcon(feature.iconKey);
+              return (
               <motion.div
-                key={index}
+                key={`${feature.title}-${index}`}
                 variants={itemVariants}
                 className="flex gap-5 p-6 rounded-2xl bg-secondary/40 border border-border/50"
               >
                 <div className="w-14 h-14 flex-shrink-0 rounded-xl bg-gold/10 flex items-center justify-center">
-                  <feature.icon className="w-7 h-7 text-gold" />
+                  <Icon className="w-7 h-7 text-gold" />
                 </div>
                 <div>
                   <h3 className="font-serif text-xl font-medium text-foreground mb-2">
@@ -226,7 +258,7 @@ const Facilities = () => {
                   </p>
                 </div>
               </motion.div>
-            ))}
+            )})}
           </motion.div>
         </div>
       </section>
@@ -241,9 +273,9 @@ const Facilities = () => {
             transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <p className="text-sm tracking-[0.2em] uppercase text-gold mb-3">Flexible Hours</p>
+            <p className="text-sm tracking-[0.2em] uppercase text-gold mb-3">{facilitiesContent?.hoursSection.eyebrow ?? "Flexible Hours"}</p>
             <h2 className="font-serif text-3xl md:text-4xl font-medium text-foreground">
-              Open When You Need Us
+              {facilitiesContent?.hoursSection.title ?? "Open When You Need Us"}
             </h2>
           </motion.div>
 
@@ -254,14 +286,16 @@ const Facilities = () => {
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-3 gap-6"
           >
-            {diningHours.map((slot, index) => (
+            {hoursItems.map((slot, index) => {
+              const Icon = getContentIcon(slot.iconKey);
+              return (
               <motion.div
-                key={index}
+                key={`${slot.title}-${index}`}
                 variants={itemVariants}
                 className="text-center p-8 rounded-2xl bg-background border border-border/50"
               >
                 <div className="w-14 h-14 mx-auto rounded-full bg-gold/10 flex items-center justify-center mb-4">
-                  <slot.icon className="w-7 h-7 text-gold" />
+                  <Icon className="w-7 h-7 text-gold" />
                 </div>
                 <p className="text-sm font-medium text-gold mb-2">{slot.time}</p>
                 <h3 className="font-serif text-xl font-medium text-foreground mb-2">
@@ -271,7 +305,7 @@ const Facilities = () => {
                   {slot.description}
                 </p>
               </motion.div>
-            ))}
+            )})}
           </motion.div>
         </div>
       </section>
@@ -286,9 +320,9 @@ const Facilities = () => {
             transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <p className="text-sm tracking-[0.2em] uppercase text-gold mb-3">Comfort & Privacy</p>
+            <p className="text-sm tracking-[0.2em] uppercase text-gold mb-3">{facilitiesContent?.spacesSection.eyebrow ?? "Comfort & Privacy"}</p>
             <h2 className="font-serif text-3xl md:text-4xl font-medium">
-              Thoughtfully Designed Spaces
+              {facilitiesContent?.spacesSection.title ?? "Thoughtfully Designed Spaces"}
             </h2>
           </motion.div>
 
@@ -299,14 +333,16 @@ const Facilities = () => {
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
-            {comfortFeatures.map((feature, index) => (
+            {spacesItems.map((feature, index) => {
+              const Icon = getContentIcon(feature.iconKey);
+              return (
               <motion.div
-                key={index}
+                key={`${feature.title}-${index}`}
                 variants={itemVariants}
                 className="flex gap-5 p-6 rounded-2xl bg-espresso-foreground/5 border border-espresso-foreground/10"
               >
                 <div className="w-14 h-14 flex-shrink-0 rounded-xl bg-gold/20 flex items-center justify-center">
-                  <feature.icon className="w-7 h-7 text-gold" />
+                  <Icon className="w-7 h-7 text-gold" />
                 </div>
                 <div>
                   <h3 className="font-serif text-xl font-medium mb-2">
@@ -318,7 +354,7 @@ const Facilities = () => {
                   <span className="text-sm text-gold font-medium">{feature.highlight}</span>
                 </div>
               </motion.div>
-            ))}
+            )})}
           </motion.div>
         </div>
       </section>
@@ -377,9 +413,9 @@ const Facilities = () => {
             transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <p className="text-sm tracking-[0.2em] uppercase text-gold mb-3">Quality Standards</p>
+            <p className="text-sm tracking-[0.2em] uppercase text-gold mb-3">{facilitiesContent?.qualitySection.eyebrow ?? "Quality Standards"}</p>
             <h2 className="font-serif text-3xl md:text-4xl font-medium text-foreground">
-              Purity You Can Trust
+              {facilitiesContent?.qualitySection.title ?? "Purity You Can Trust"}
             </h2>
           </motion.div>
 
@@ -390,14 +426,16 @@ const Facilities = () => {
             viewport={{ once: true }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
           >
-            {qualityPrinciples.map((principle, index) => (
+            {qualityItems.map((principle, index) => {
+              const Icon = getContentIcon(principle.iconKey);
+              return (
               <motion.div
-                key={index}
+                key={`${principle.title}-${index}`}
                 variants={itemVariants}
                 className="p-6 rounded-2xl bg-background border border-border/50"
               >
                 <div className="w-12 h-12 rounded-xl bg-gold/10 flex items-center justify-center mb-4">
-                  <principle.icon className="w-6 h-6 text-gold" />
+                  <Icon className="w-6 h-6 text-gold" />
                 </div>
                 <h3 className="font-serif text-lg font-medium text-foreground mb-2">
                   {principle.title}
@@ -406,7 +444,7 @@ const Facilities = () => {
                   {principle.description}
                 </p>
               </motion.div>
-            ))}
+            )})}
           </motion.div>
         </div>
       </section>

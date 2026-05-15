@@ -15,6 +15,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const demoAuthEnabled = import.meta.env.VITE_ENABLE_DEMO_AUTH === "true";
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -33,6 +34,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!demoAuthEnabled) {
+      localStorage.removeItem("rd-cafe-user");
+      setIsLoading(false);
+      return;
+    }
+
     // Check for existing session on mount
     const storedUser = localStorage.getItem("rd-cafe-user");
     if (storedUser) {
@@ -46,6 +53,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
+    if (!demoAuthEnabled) {
+      return false;
+    }
+
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 800));
     
@@ -64,6 +75,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const signup = async (email: string, password: string, name: string): Promise<boolean> => {
+    if (!demoAuthEnabled) {
+      return false;
+    }
+
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 800));
     

@@ -5,8 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:cms": "zsh -lc 'npm run cms:studio & npm run dev'",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "cms:studio": "npm --prefix sanity-studio run dev",
+    "cms:build": "npm --prefix sanity-studio run build",
+    "cms:seed:menu": "npm --prefix sanity-studio run seed:menu",
+    "cms:seed:all": "npm --prefix sanity-studio run seed:all",
     "lint": "eslint .",
     "preview": "vite preview"
   },

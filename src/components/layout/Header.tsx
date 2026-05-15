@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, LogIn } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { smoothTransition } from "@/lib/animations";
 import logoWhite from "@/assets/logo-white.png";
-import { useAuth } from "@/contexts/AuthContext";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const NAV_LINKS = [
   { name: "Home", path: "/" },
@@ -13,11 +11,42 @@ const NAV_LINKS = [
   { name: "Facilities", path: "/facilities" },
   { name: "Bookings", path: "/bookings" },
   { name: "About", path: "/about" },
+  { name: "Blog", path: "/blog" },
   { name: "Gallery", path: "/gallery" },
   { name: "Contact", path: "/contact" },
 ] as const;
 
 const SCROLL_THRESHOLD = 10;
+type HeaderTone = "light" | "dark";
+
+const ROUTE_TOP_TONES: Record<string, HeaderTone> = {
+  "/": "dark",
+  "/gallery": "dark",
+  "/menu": "light",
+  "/about": "light",
+  "/facilities": "light",
+  "/bookings": "light",
+  "/contact": "light",
+  "/blog": "light",
+  "/cafe-admin": "light",
+  "/admin": "light",
+};
+
+function getTopTone(pathname: string): HeaderTone {
+  if (pathname.startsWith("/blog/")) {
+    return "dark";
+  }
+
+  return ROUTE_TOP_TONES[pathname] ?? "light";
+}
+
+function isLinkActive(currentPath: string, linkPath: string) {
+  if (linkPath === "/") {
+    return currentPath === "/";
+  }
+
+  return currentPath === linkPath || currentPath.startsWith(`${linkPath}/`);
+}
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -65,35 +94,40 @@ const Header = () => {
     setIsMobileMenuOpen(false);
   }, []);
 
+  const topTone = getTopTone(location.pathname);
+  const tone: HeaderTone = isScrolled ? "dark" : topTone;
+  const isScrolledShell = isScrolled;
+
   return (
     <>
       <motion.header
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: isVisible ? 0 : -100, opacity: isVisible ? 1 : 0 }}
         transition={smoothTransition}
-        className="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 pt-4"
+        className="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 pt-5"
         role="banner"
       >
         <nav 
           className={`
-            mx-auto max-w-7xl rounded-2xl transition-all duration-700 ease-out
-            ${isScrolled
-              ? "bg-background/95 backdrop-blur-xl shadow-card border border-border"
-              : "bg-background/80 backdrop-blur-lg shadow-soft border border-border/40"
+            mx-auto max-w-7xl transition-all duration-700 ease-out
+            ${isScrolledShell
+              ? "rounded-full border border-[#C49A3C]/22 bg-[rgba(88,76,66,0.88)] shadow-elevated backdrop-blur-xl"
+              : "border border-transparent bg-transparent"
             }
           `}
           aria-label="Main navigation"
         >
-          <div className="flex items-center justify-between h-16 lg:h-18 px-6 lg:px-8">
-            <Logo />
+          <div className="flex h-16 items-center justify-between gap-4 px-4 lg:grid lg:grid-cols-[auto_1fr_auto] lg:gap-6 lg:px-6">
+            <Logo tone={tone} />
             <DesktopNav 
               currentPath={location.pathname} 
               hoveredLink={hoveredLink}
               onHoverStart={setHoveredLink}
               onHoverEnd={() => setHoveredLink(null)}
+              tone={tone}
             />
-            <CTAButton />
-            <MobileMenuToggle isOpen={isMobileMenuOpen} onToggle={toggleMobileMenu} />
+            <CTAButton tone={tone} />
+            <MobileMenuToggle isOpen={isMobileMenuOpen} onToggle={toggleMobileMenu} tone={tone} />
           </div>
         </nav>
       </motion.header>
@@ -107,7 +141,7 @@ const Header = () => {
   );
 };
 
-const Logo = memo(() => (
+const Logo = memo(({ tone }: { tone: HeaderTone }) => (
   <Link 
     to="/" 
     className="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg"
@@ -120,7 +154,11 @@ const Logo = memo(() => (
       <img 
         src={logoWhite} 
         alt="RD CAFE Logo" 
-        className="h-10 md:h-12 w-auto invert brightness-0 sepia saturate-[800%] hue-rotate-[345deg] opacity-80"
+        className={`h-10 md:h-11 w-auto transition-all duration-500 ${
+          tone === "dark"
+            ? "invert brightness-0 sepia saturate-[700%] hue-rotate-[344deg] opacity-95"
+            : "brightness-0 saturate-100 sepia-[18%] contrast-[1.05] opacity-95"
+        }`}
       />
     </motion.div>
   </Link>
@@ -133,110 +171,83 @@ interface DesktopNavProps {
   hoveredLink: string | null;
   onHoverStart: (path: string) => void;
   onHoverEnd: () => void;
+  tone: HeaderTone;
 }
 
-const DesktopNav = memo(({ currentPath, hoveredLink, onHoverStart, onHoverEnd }: DesktopNavProps) => (
-  <ul className="hidden lg:flex items-center gap-8" role="menubar">
-    {NAV_LINKS.map((link) => (
-      <motion.li
-        key={link.path}
-        onHoverStart={() => onHoverStart(link.path)}
-        onHoverEnd={onHoverEnd}
-        className="relative"
-        role="none"
-      >
-        <Link
-          to={link.path}
-          className={`relative text-sm font-serif font-medium tracking-wide transition-all duration-400 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded ${
-            currentPath === link.path
-              ? "text-primary" 
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-          role="menuitem"
-          aria-current={currentPath === link.path ? "page" : undefined}
+const DesktopNav = memo(({ currentPath, hoveredLink, onHoverStart, onHoverEnd, tone }: DesktopNavProps) => (
+  <ul className="hidden lg:flex items-center justify-center gap-5 xl:gap-7" role="menubar">
+    {NAV_LINKS.map((link) => {
+      const active = isLinkActive(currentPath, link.path);
+
+      return (
+        <motion.li
+          key={link.path}
+          onHoverStart={() => onHoverStart(link.path)}
+          onHoverEnd={onHoverEnd}
+          className="relative"
+          role="none"
         >
-          <span className="relative z-10">{link.name}</span>
-          
-          {currentPath === link.path && (
-            <motion.div
-              layoutId="activeNav"
-              className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary"
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          <Link
+            to={link.path}
+            className={`relative rounded px-1 py-2 text-[0.88rem] font-sohne font-medium tracking-[0.12em] transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+              active
+                ? tone === "dark" ? "text-[#F5ECD7]" : "text-[#2A140D]"
+                : tone === "dark"
+                  ? "text-[#F5ECD7] hover:text-[#FFFFFF] hover:tracking-[0.14em]"
+                  : "text-[#2A140D] hover:text-[#000000] hover:tracking-[0.14em]"
+            }`}
+            role="menuitem"
+            aria-current={active ? "page" : undefined}
+          >
+            <span className="relative z-10">{link.name}</span>
+
+            {active && (
+              <motion.div
+                layoutId="activeNav"
+                className="absolute left-0 -bottom-1 h-[2px] w-full bg-[#C49A3C]"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                aria-hidden="true"
+              />
+            )}
+
+            <motion.span
+              className="absolute left-0 -bottom-1 h-[2px] w-full origin-left rounded-full bg-[#C49A3C]"
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{
+                scaleX: hoveredLink === link.path && !active ? 1 : 0,
+                opacity: hoveredLink === link.path && !active ? 1 : 0
+              }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
               aria-hidden="true"
             />
-          )}
-          
-          <motion.span 
-            className="absolute -bottom-1 left-0 h-[2px] rounded-full bg-primary/70"
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ 
-              width: hoveredLink === link.path && currentPath !== link.path ? "100%" : 0,
-              opacity: hoveredLink === link.path && currentPath !== link.path ? 1 : 0
-            }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            aria-hidden="true"
-          />
-        </Link>
-      </motion.li>
-    ))}
+          </Link>
+        </motion.li>
+      );
+    })}
   </ul>
 ));
 
 DesktopNav.displayName = "DesktopNav";
 
-const CTAButton = memo(() => {
-  const { user } = useAuth();
+const CTAButton = memo(({ tone }: { tone: HeaderTone }) => {
+  const ctaClass = tone === "dark"
+    ? "border-[#C49A3C] bg-[rgba(28,16,8,0.14)] text-[#F7E7C6] hover:bg-[#C49A3C] hover:text-[#1C1008]"
+    : "border-[#B98B39] bg-[rgba(250,246,241,0.82)] text-[#1F120A] shadow-[0_10px_28px_rgba(28,16,8,0.08)] backdrop-blur-sm hover:bg-[#C49A3C] hover:text-[#1C1008]";
   
   return (
-    <div className="hidden lg:flex items-center gap-2">
-      {user ? (
-        <motion.div
-          whileHover={{ scale: 1.03, y: -1 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-        >
-          <Link 
-            to="/dashboard"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-serif font-medium text-sm tracking-wide bg-secondary text-foreground hover:bg-secondary/80 transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-          >
-            <User size={16} />
-            <span>Dashboard</span>
-          </Link>
-        </motion.div>
-      ) : (
-        <motion.div
-          whileHover={{ scale: 1.03, y: -1 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-        >
-          <Link 
-            to="/login"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-serif font-medium text-sm tracking-wide border border-border text-foreground hover:bg-secondary transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-          >
-            <LogIn size={16} />
-            <span>Sign In</span>
-          </Link>
-        </motion.div>
-      )}
+    <div className="hidden lg:flex items-center justify-end">
       <motion.div
         whileHover={{ scale: 1.03, y: -1 }}
         whileTap={{ scale: 0.98 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
         <Link 
-          to="/contact"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-serif font-semibold text-sm tracking-wide bg-primary text-primary-foreground shadow-soft hover:bg-primary/90 hover:shadow-card transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
+          to="/bookings"
+          className={`inline-flex items-center gap-2 rounded-full border px-6 py-3 text-[0.8rem] font-sohne font-medium tracking-[0.14em] transition-all duration-400 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5ECD7] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1C1008] ${ctaClass}`}
         >
-          <span>Visit Us</span>
-          <span
-            className="inline-block animate-[nudge-right_1.5s_ease-in-out_infinite]"
-            aria-hidden="true"
-          >
-            →
-          </span>
+          <span>Reserve a Table</span>
         </Link>
       </motion.div>
-      <ThemeToggle />
     </div>
   );
 });
@@ -246,12 +257,17 @@ CTAButton.displayName = "CTAButton";
 interface MobileMenuToggleProps {
   isOpen: boolean;
   onToggle: () => void;
+  tone: HeaderTone;
 }
 
-const MobileMenuToggle = memo(({ isOpen, onToggle }: MobileMenuToggleProps) => (
+const MobileMenuToggle = memo(({ isOpen, onToggle, tone }: MobileMenuToggleProps) => (
   <motion.button
     onClick={onToggle}
-    className="lg:hidden p-2.5 rounded-xl text-foreground hover:bg-secondary transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+    className={`lg:hidden rounded-xl p-2.5 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+      tone === "dark"
+        ? "text-[#F5ECD7] hover:bg-white/8"
+        : "text-[#2A140D] hover:bg-[#2A140D]/6"
+    }`}
     aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
     aria-expanded={isOpen}
     aria-controls="mobile-menu"
@@ -334,10 +350,10 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
               >
                 <Link
                   to={link.path}
-                  className={`flex items-center gap-3 text-lg font-serif font-medium tracking-wide py-4 px-4 rounded-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                  className={`flex items-center gap-3 rounded-xl px-4 py-4 font-sohne text-lg font-medium tracking-[0.04em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                     currentPath === link.path
-                      ? "text-primary bg-secondary"
-                      : "text-foreground hover:text-primary hover:bg-muted hover:pl-6"
+                      ? "bg-secondary text-primary"
+                      : "text-foreground hover:bg-muted hover:pl-6 hover:text-primary"
                   }`}
                   role="menuitem"
                   aria-current={currentPath === link.path ? "page" : undefined}
@@ -353,32 +369,20 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
                 </Link>
               </motion.li>
             ))}
-            
-            <MobileAuthButton />
 
             <motion.li
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.48, duration: 0.4 }}
-              className="flex justify-center pt-2"
-              role="none"
-            >
-              <ThemeToggle />
-            </motion.li>
-            
-            <motion.li
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.55, duration: 0.4 }}
               className="pt-2"
               role="none"
             >
               <Link 
-                to="/contact"
-                className="flex items-center justify-center gap-2 w-full py-3.5 rounded-full font-serif font-semibold tracking-wide bg-primary text-primary-foreground shadow-card hover:bg-primary/90 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
+                to="/bookings"
+                className="flex w-full items-center justify-center gap-2 rounded-full border border-[#C49A3C] py-3.5 font-sohne font-medium tracking-[0.14em] text-[#F7E7C6] transition-all duration-300 hover:bg-[#C49A3C] hover:text-[#1C1008] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#1C1008]"
                 role="menuitem"
               >
-                <span>Visit Us</span>
+                <span>Reserve a Table</span>
               </Link>
             </motion.li>
           </ul>
@@ -389,41 +393,5 @@ const MobileMenu = memo(({ isOpen, currentPath, onClose }: MobileMenuProps) => (
 ));
 
 MobileMenu.displayName = "MobileMenu";
-
-const MobileAuthButton = memo(() => {
-  const { user } = useAuth();
-  
-  return (
-    <motion.li
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5, duration: 0.4 }}
-      className="pt-4"
-      role="none"
-    >
-      {user ? (
-        <Link 
-          to="/dashboard"
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-serif font-medium tracking-wide border border-border text-foreground hover:bg-secondary transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-          role="menuitem"
-        >
-          <User size={18} aria-hidden="true" />
-          <span>My Dashboard</span>
-        </Link>
-      ) : (
-        <Link 
-          to="/login"
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-serif font-medium tracking-wide border border-border text-foreground hover:bg-secondary transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-          role="menuitem"
-        >
-          <LogIn size={18} aria-hidden="true" />
-          <span>Sign In</span>
-        </Link>
-      )}
-    </motion.li>
-  );
-});
-
-MobileAuthButton.displayName = "MobileAuthButton";
 
 export default Header;

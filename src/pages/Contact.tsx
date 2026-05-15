@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { MapPin, Phone, Mail, Clock, Send, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimit } from "@/hooks/useRateLimit";
+import { useContactPageContent, useSiteSettings } from "@/hooks/useContent";
+import { RD_CAFE_MAPS_URL } from "@/data/siteContent";
 
 // Zod validation schema
 const contactSchema = z.object({
@@ -40,6 +42,8 @@ type ContactFormData = z.infer<typeof contactSchema>;
 
 const Contact = () => {
   const { toast } = useToast();
+  const { data: contactPage } = useContactPageContent();
+  const { data: siteSettings } = useSiteSettings();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof ContactFormData, string>>>({});
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
@@ -101,17 +105,41 @@ const Contact = () => {
     
     setIsSubmitting(true);
     recordAttempt(); // Record the submission attempt
-    
-    // Simulate form submission with sanitized data
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Message Sent!",
-      description: `Thank you for reaching out. We'll get back to you soon. ${getRemainingAttempts()} messages remaining.`,
-    });
-    
-    setFormData({ name: "", email: "", subject: "", message: "" });
-    setIsSubmitting(false);
+
+    try {
+      const response = await fetch("/api/form-submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          formType: "contact",
+          submittedAt: new Date().toISOString(),
+          pageUrl: typeof window !== "undefined" ? window.location.href : "/contact",
+          data: result.data,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to send message with status ${response.status}`);
+      }
+
+      toast({
+        title: "Message Sent!",
+        description: `Thank you for reaching out. We'll get back to you soon. ${getRemainingAttempts()} messages remaining.`,
+      });
+
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      console.error("Unable to submit contact form.", error);
+      toast({
+        title: "Message Failed",
+        description: "We couldn't send your message right now. Please try again in a moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -134,13 +162,13 @@ const Contact = () => {
             transition={{ duration: 0.6 }}
           >
             <span className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4 block">
-              Get in Touch
+              {contactPage?.heroEyebrow}
             </span>
             <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl mb-6">
-              Contact Us
+              {contactPage?.heroTitle}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
-              We'd love to hear from you. Drop by, give us a call, or send a message.
+              {contactPage?.heroDescription}
             </p>
           </motion.div>
         </div>
@@ -155,10 +183,10 @@ const Contact = () => {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
+            transition={{ duration: 0.8 }}
+          >
               <h2 className="font-serif text-3xl md:text-4xl mb-8">
-                Visit Our <span className="text-primary italic">Cozy Corner</span>
+                {contactPage?.visitTitle} <span className="text-primary italic">{contactPage?.visitHighlight}</span>
               </h2>
               
               <div className="space-y-8 mb-12">
@@ -170,8 +198,12 @@ const Contact = () => {
                   <div>
                     <h3 className="font-medium text-lg mb-1">Location</h3>
                     <p className="text-muted-foreground">
-                      123 Cozy Lane, Downtown District<br />
-                      City 10001
+                      {siteSettings?.addressLines.map((line) => (
+                        <span key={line}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
                     </p>
                   </div>
                 </div>
@@ -183,7 +215,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-lg mb-1">Phone</h3>
-                    <p className="text-muted-foreground">+1 (555) 123-4567</p>
+                    <p className="text-muted-foreground">{siteSettings?.phone}</p>
                   </div>
                 </div>
 
@@ -194,7 +226,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-lg mb-1">Email</h3>
-                    <p className="text-muted-foreground">hello@rdcafe.com</p>
+                    <p className="text-muted-foreground">{siteSettings?.email}</p>
                   </div>
                 </div>
 
@@ -206,25 +238,32 @@ const Contact = () => {
                   <div>
                     <h3 className="font-medium text-lg mb-1">Opening Hours</h3>
                     <div className="text-muted-foreground space-y-1">
-                      <p>Mon - Fri: 7:00 AM - 9:00 PM</p>
-                      <p>Sat - Sun: 8:00 AM - 10:00 PM</p>
+                      {siteSettings?.businessHours.map((entry) => (
+                        <p key={entry.label}>{entry.label}: {entry.value}</p>
+                      ))}
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Map Placeholder */}
-              <div className="aspect-video rounded-2xl overflow-hidden bg-secondary border border-border shadow-soft">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095919364!2d-74.00425878459473!3d40.74076794379132!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259bf5c1654f3%3A0xc80f9cfce5383d5d!2sGoogle%20NYC!5e0!3m2!1sen!2sus!4v1635959875969!5m2!1sen!2sus"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="RD CAFE Location"
-                />
+              <div className="rounded-2xl overflow-hidden bg-secondary border border-border shadow-soft">
+                <div className="aspect-video flex flex-col items-center justify-center gap-5 px-6 text-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                    <MapPin className="text-primary" size={28} />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-2xl text-foreground">Open our location in Google Maps</h3>
+                    <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                      Use the live map link for directions, traffic, and turn-by-turn navigation.
+                    </p>
+                  </div>
+                  <Button asChild>
+                    <a href={RD_CAFE_MAPS_URL} target="_blank" rel="noreferrer">
+                      Open Google Maps
+                    </a>
+                  </Button>
+                </div>
               </div>
             </motion.div>
 

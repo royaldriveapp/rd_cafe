@@ -36,6 +36,9 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimit } from "@/hooks/useRateLimit";
 
+type BookingFormValue = string | boolean;
+type BookingFormData = Record<string, BookingFormValue>;
+
 // Base schema for common fields with strict validation
 const baseBookingSchema = z.object({
   name: z
@@ -189,7 +192,7 @@ const Bookings = () => {
     return () => clearInterval(interval);
   }, [getRemainingCooldown]);
 
-  const [formData, setFormData] = useState<Record<string, any>>({
+  const [formData, setFormData] = useState<BookingFormData>({
     name: "",
     email: "",
     phone: "",
@@ -274,18 +277,45 @@ const Bookings = () => {
 
     setIsSubmitting(true);
     recordAttempt(); // Record the submission attempt
-    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    toast({
-      title: "Booking Request Submitted!",
-      description: `We'll contact you shortly to confirm your booking. ${getRemainingAttempts()} submissions remaining.`,
-    });
+    try {
+      const response = await fetch("/api/form-submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          formType: "booking",
+          bookingType: selectedBooking,
+          submittedAt: new Date().toISOString(),
+          pageUrl: typeof window !== "undefined" ? window.location.href : "/bookings",
+          data: result.data,
+        }),
+      });
 
-    handleCloseBooking();
-    setIsSubmitting(false);
+      if (!response.ok) {
+        throw new Error(`Failed to submit booking with status ${response.status}`);
+      }
+
+      toast({
+        title: "Booking Request Submitted!",
+        description: `We'll contact you shortly to confirm your booking. ${getRemainingAttempts()} submissions remaining.`,
+      });
+
+      handleCloseBooking();
+    } catch (error) {
+      console.error("Unable to submit booking form.", error);
+      toast({
+        title: "Booking Failed",
+        description: "We couldn't send your request right now. Please try again shortly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleChange = (name: string, value: any) => {
+  const handleChange = (name: string, value: BookingFormValue) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));

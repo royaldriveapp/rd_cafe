@@ -34,6 +34,15 @@ const PLATFORMS: Omit<PlatformConnection, "status" | "apiKey" | "webhookUrl" | "
   },
 ];
 
+function isValidHttpsUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 const PlatformConnections = () => {
   const { toast } = useToast();
   const [connections, setConnections] = useState<Record<string, { apiKey: string; webhookUrl: string; connected: boolean; lastSync: string | null }>>({});
@@ -43,14 +52,14 @@ const PlatformConnections = () => {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("rdcafe_platform_connections");
-      if (saved) setConnections(JSON.parse(saved));
-    } catch {}
+      setConnections({});
+    } catch (error) {
+      console.warn("Unable to initialize platform connections", error);
+    }
   }, []);
 
   const saveConnections = (updated: typeof connections) => {
     setConnections(updated);
-    localStorage.setItem("rdcafe_platform_connections", JSON.stringify(updated));
   };
 
   const openConfig = (platformId: string) => {
@@ -64,6 +73,10 @@ const PlatformConnections = () => {
     if (!configuring) return;
     if (!tempApiKey && !tempWebhookUrl) {
       toast({ title: "Error", description: "Please provide an API key or webhook URL", variant: "destructive" });
+      return;
+    }
+    if (tempWebhookUrl && !isValidHttpsUrl(tempWebhookUrl)) {
+      toast({ title: "Invalid Webhook", description: "Please use a valid HTTPS webhook URL.", variant: "destructive" });
       return;
     }
     const updated = {
@@ -116,7 +129,7 @@ const PlatformConnections = () => {
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-2">
         <Shield size={16} className="text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">API keys are stored locally for demo purposes. In production, use secure server-side storage.</p>
+        <p className="text-sm text-muted-foreground">Credentials are kept in-memory only for this demo session. In production, use secure server-side storage.</p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
