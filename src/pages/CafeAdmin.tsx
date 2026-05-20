@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { sanityStudioUrl } from "@/lib/sanity";
 import { ArrowRight, FileText, Image, Lock, PencilLine, ShieldCheck } from "lucide-react";
 
-const studioPath = sanityStudioUrl || "/cafe-admin/studio";
+const studioPath = sanityStudioUrl || "/sanity";
 
 const accessItems = [
   {

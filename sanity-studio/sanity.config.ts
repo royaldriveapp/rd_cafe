@@ -11,7 +11,7 @@ export default defineConfig({
   title: "RD Cafe Content Studio",
   projectId,
   dataset,
-  basePath: "/cafe-admin/studio",
+  basePath: "/sanity",
   plugins: [deskTool(), visionTool()],
   schema: {
     types: schemaTypes,

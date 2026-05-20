@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/sanity/:path*",
+      "destination": "https://rd-cafe-studio.vercel.app/sanity/:path*"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/$1"
     },
