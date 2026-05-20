@@ -14,10 +14,11 @@ export default defineConfig(({ mode }) => {
       host: "::",
       port: 8080,
       proxy: {
-        "/sanity": {
+        "/studio": {
           target: "http://127.0.0.1:3333",
           changeOrigin: true,
           ws: true,
+          rewrite: (path) => path.replace(/^\/studio/, ""),
         },
       },
     },
