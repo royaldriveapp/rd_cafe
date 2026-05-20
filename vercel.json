@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/studio/:path*",
-      "destination": "https://rd-cafe-studio.vercel.app/:path*"
+      "destination": "https://rd-cafe-studio.vercel.app/studio/:path*"
     },
     {
       "source": "/api/(.*)",
