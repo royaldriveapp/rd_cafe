@@ -7,6 +7,10 @@ const RECEIPT_GOLD = "#C49A3C";
 const RECEIPT_MID = "#6C472B";
 const RECEIPT_SOFT = "#9A7651";
 const SITE_BG = "#140800";
+const RESERVATION_LINKS = [
+  { label: "eazydiner.com", href: "https://www.eazydiner.com/" },
+  { label: "swiggy.com", href: "https://www.swiggy.com/" },
+];
 
 function ZigZagEdge({ position }: { position: "top" | "bottom" }) {
   const topPattern =
@@ -170,7 +174,7 @@ const Footer = () => {
                         RD <span style={{ color: RECEIPT_GOLD }}>CAFE</span>
                       </div>
                       <div className="mt-3 font-sans text-[0.58rem] uppercase tracking-[0.18em] sm:text-[0.56rem] sm:tracking-[0.28em] lg:tracking-[0.32em]" style={{ color: RECEIPT_SOFT }}>
-                        Est. 2019 · 123 Cozy Lane, City 10001
+                        Est. 2019 · {siteSettings.addressLines[0]}
                       </div>
                     </div>
 
@@ -203,7 +207,7 @@ const Footer = () => {
                           }}
                         >
                           <span className="font-semibold">{entry.label.replace(" to ", " — ").replace("Monday", "MON").replace("Friday", "FRI").replace("Saturday", "SAT").replace("Sunday", "SUN")}</span>
-                          <span style={{ color: RECEIPT_GOLD }}>{entry.value.replace(" AM", "").replace(" PM", "")}</span>
+                          <span style={{ color: RECEIPT_GOLD }}>{entry.value}</span>
                         </div>
                       ))}
                     </div>
@@ -215,15 +219,32 @@ const Footer = () => {
                       {[
                         { icon: "◎", text: siteSettings.addressLines.join(", ") },
                         { icon: "✆", text: siteSettings.phone, href: `tel:${siteSettings.phone.replace(/[^\d+]/g, "")}` },
-                        { icon: "✉", text: siteSettings.email, href: `mailto:${siteSettings.email}` },
-                      ].map((item, index) => (
+                        {
+                          icon: "⌘",
+                          text: "Reservations",
+                          custom: (
+                            <span className="flex flex-wrap gap-x-2 gap-y-1">
+                              {RESERVATION_LINKS.map((link, linkIndex) => (
+                                <span key={link.label} className="inline-flex items-center gap-2">
+                                  <a href={link.href} target="_blank" rel="noreferrer" className="hover:text-[#1E0C02]">
+                                    {link.label}
+                                  </a>
+                                  {linkIndex < RESERVATION_LINKS.length - 1 ? <span>·</span> : null}
+                                </span>
+                              ))}
+                            </span>
+                          ),
+                        },
+                      ].map((item, index, items) => (
                         <div
                           key={item.text}
-                          className={`flex items-start gap-3 py-[10px] font-sans text-[0.84rem] leading-[1.75] sm:text-[0.76rem] ${index < 2 ? "border-b" : ""}`}
+                          className={`flex items-start gap-3 py-[10px] font-sans text-[0.84rem] leading-[1.75] sm:text-[0.76rem] ${index < items.length - 1 ? "border-b" : ""}`}
                           style={{ borderColor: "rgba(196,154,60,0.12)", color: RECEIPT_MID }}
                         >
                           <span style={{ color: RECEIPT_GOLD }}>{item.icon}</span>
-                          {item.href ? (
+                          {"custom" in item && item.custom ? (
+                            item.custom
+                          ) : item.href ? (
                             <a href={item.href} className="hover:text-[#1E0C02]">
                               {item.text}
                             </a>

@@ -49,12 +49,14 @@ export const defaultSiteSettings: SiteSettings = {
     { platform: "facebook", url: "https://facebook.com" },
   ],
   businessHours: [
-    { label: "Monday to Friday", value: "7:00 AM – 9:00 PM" },
-    { label: "Saturday to Sunday", value: "8:00 AM – 10:00 PM" },
+    { label: "Daily", value: "Open · Closes 2:00 AM" },
   ],
-  addressLines: ["123 Cozy Lane, Downtown District", "City 10001"],
-  phone: "+1 (555) 123-4567",
-  email: "hello@rdcafe.com",
+  addressLines: [
+    "INTUC Bus Stop, 220/B, NH66, Nettoor, Maradu, Kochi",
+    "Ernakulam, Kerala 682040, India",
+  ],
+  phone: "+91 85930 01010",
+  email: "",
   footerBottomLeft: "© 2026 RD CAFE. All rights reserved.",
   footerBottomRight: "Crafted with love for coffee lovers",
   visitCta: {
@@ -69,12 +71,15 @@ export const defaultSiteSettings: SiteSettings = {
       {
         iconKey: "mapPin",
         title: "Find Us",
-        lines: ["123 Cozy Lane, Downtown District", "City 10001"],
+        lines: [
+          "INTUC Bus Stop, 220/B, NH66, Nettoor, Maradu, Kochi",
+          "Ernakulam, Kerala 682040, India",
+        ],
       },
       {
         iconKey: "clock",
         title: "Hours",
-        lines: ["Monday – Friday: 7:00 AM – 9:00 PM", "Saturday – Sunday: 8:00 AM – 10:00 PM"],
+        lines: ["Open Daily", "Closes 2:00 AM"],
       },
     ],
   },
