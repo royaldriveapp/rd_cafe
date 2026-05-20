@@ -49,7 +49,7 @@ export const defaultSiteSettings: SiteSettings = {
     { platform: "facebook", url: "https://facebook.com" },
   ],
   businessHours: [
-    { label: "Daily", value: "Open · Closes 2:00 AM" },
+    { label: "Monday to Sunday", value: "7:00 AM - 2:00 AM" },
   ],
   addressLines: [
     "INTUC Bus Stop, 220/B, NH66, Nettoor, Maradu, Kochi",
@@ -79,7 +79,7 @@ export const defaultSiteSettings: SiteSettings = {
       {
         iconKey: "clock",
         title: "Hours",
-        lines: ["Open Daily", "Closes 2:00 AM"],
+        lines: ["Monday to Sunday", "7:00 AM - 2:00 AM"],
       },
     ],
   },
