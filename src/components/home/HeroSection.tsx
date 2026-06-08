@@ -31,7 +31,7 @@ const HeroSection = () => {
 
             <h1
               id="hero-heading"
-              className="hero-title font-serif"
+              className="hero-title font-brand"
             >
               RD CAFÉ
             </h1>

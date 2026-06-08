@@ -16,6 +16,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Sohne', 'Inter', 'Avenir Next', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        brand: ['Fontastique', 'Playfair Display', 'Georgia', 'serif'],
         serif: ['Playfair Display', 'Georgia', 'serif'],
         display: ['Cormorant Garamond', 'Georgia', 'serif'],
         sohne: ['Sohne', 'Inter', 'Avenir Next', 'Helvetica Neue', 'Arial', 'sans-serif'],

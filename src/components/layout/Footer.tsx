@@ -133,7 +133,7 @@ const Footer = () => {
               }}
             >
               <div
-                className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden font-serif text-[7rem] font-black tracking-[0.24em] text-[rgba(160,100,30,0.04)] md:text-[9.4rem]"
+                className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden font-brand text-[7rem] font-normal tracking-[0.24em] text-[rgba(160,100,30,0.04)] md:text-[9.4rem]"
                 style={{ transform: "translate(-50%, -50%) rotate(-12deg)", top: "50%", left: "50%", position: "absolute", whiteSpace: "nowrap" }}
                 aria-hidden="true"
               >
@@ -154,7 +154,7 @@ const Footer = () => {
                   </div>
 
                   <div className="order-1 text-center lg:order-2">
-                    <h2 className="font-serif text-[2.35rem] font-black leading-none tracking-[0.14em] sm:text-[2.85rem] md:text-[3.25rem] lg:text-[3.5rem] lg:tracking-[0.2em] xl:text-[4rem]" style={{ color: RECEIPT_INK }}>
+                    <h2 className="font-brand text-[2.35rem] font-normal leading-none tracking-[0.14em] sm:text-[2.85rem] md:text-[3.25rem] lg:text-[3.5rem] lg:tracking-[0.2em] xl:text-[4rem]" style={{ color: RECEIPT_INK }}>
                       RD CAFE
                     </h2>
                     <p className="mt-3 px-2 font-display text-[1rem] italic leading-relaxed sm:px-0 md:text-[1.14rem] lg:text-[1.28rem]" style={{ color: RECEIPT_MID }}>
@@ -170,7 +170,7 @@ const Footer = () => {
                 <div className="grid gap-8 border-b py-7 sm:gap-9 md:grid-cols-2 md:gap-x-10 md:py-8 xl:grid-cols-[1.2fr_0.95fr_0.85fr_1fr] xl:gap-x-14" style={{ borderColor: "rgba(196,154,60,0.16)" }}>
                   <div className="flex flex-col gap-5">
                     <div>
-                      <div className="font-serif text-[2.35rem] font-black leading-none tracking-[0.13em] sm:text-[2.8rem] md:text-[3.1rem] lg:text-[3.4rem] lg:tracking-[0.16em]" style={{ color: RECEIPT_INK }}>
+                      <div className="font-brand text-[2.35rem] font-normal leading-none tracking-[0.13em] sm:text-[2.8rem] md:text-[3.1rem] lg:text-[3.4rem] lg:tracking-[0.16em]" style={{ color: RECEIPT_INK }}>
                         RD <span style={{ color: RECEIPT_GOLD }}>CAFE</span>
                       </div>
                       <div className="mt-3 font-sans text-[0.58rem] uppercase tracking-[0.18em] sm:text-[0.56rem] sm:tracking-[0.28em] lg:tracking-[0.32em]" style={{ color: RECEIPT_SOFT }}>
