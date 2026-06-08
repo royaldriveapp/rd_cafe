@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { smoothTransition } from "@/lib/animations";
-import logoWhite from "@/assets/logo-white.png";
+import cafeLogo from "@/assets/cafe-logo-cropped.png";
 
 const NAV_LINKS = [
   { name: "Home", path: "/" },
@@ -152,13 +152,9 @@ const Logo = memo(({ tone }: { tone: HeaderTone }) => (
       transition={{ duration: 0.3 }}
     >
       <img 
-        src={logoWhite} 
+        src={cafeLogo} 
         alt="RD CAFE Logo" 
-        className={`h-10 md:h-11 w-auto transition-all duration-500 ${
-          tone === "dark"
-            ? "invert brightness-0 sepia saturate-[700%] hue-rotate-[344deg] opacity-95"
-            : "brightness-0 saturate-100 sepia-[18%] contrast-[1.05] opacity-95"
-        }`}
+        className="h-10 w-10 rounded-md object-cover shadow-[0_8px_24px_rgba(0,0,0,0.14)] transition-all duration-500 md:h-11 md:w-11"
       />
     </motion.div>
   </Link>

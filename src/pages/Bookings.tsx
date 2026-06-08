@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRateLimit } from "@/hooks/useRateLimit";
+import bookingsLoungeImage from "@/assets/bookings-lounge.jpg";
 
 type BookingFormValue = string | boolean;
 type BookingFormData = Record<string, BookingFormValue>;
@@ -85,31 +86,20 @@ const baseBookingSchema = z.object({
     .optional(),
 });
 
-// Birthday specific fields
+// Celebration & events specific fields
 const birthdaySchema = baseBookingSchema.extend({
-  birthdayPersonName: z
+  eventType: z.enum(["birthday", "baby_shower", "success_party", "anniversary", "other"], {
+    required_error: "Please select the occasion type",
+  }),
+  occasionName: z
     .string()
     .trim()
-    .min(1, "Birthday person's name is required")
-    .max(100, "Name must be less than 100 characters")
-    .regex(/^[a-zA-Z\s'-]+$/, "Name contains invalid characters"),
-  birthdayPersonDOB: z
-    .string()
-    .min(1, "Date of birth is required")
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format"),
-  cakeChoice: z.enum(["chocolate", "vanilla", "butterscotch", "red_velvet", "black_forest", "custom"], { 
-    required_error: "Please select a cake" 
-  }),
-  cakeMessage: z
-    .string()
-    .trim()
-    .max(100, "Cake message must be less than 100 characters")
-    .regex(/^[a-zA-Z0-9\s.,!?'"-]*$/, "Message contains invalid characters")
-    .optional(),
-  decorationType: z.enum(["basic", "standard", "premium", "custom"], { 
-    required_error: "Please select decoration type" 
-  }),
-  cateringRequired: z.boolean().optional(),
+    .min(1, "Occasion name is required")
+    .max(100, "Occasion name must be less than 100 characters")
+    .regex(/^[a-zA-Z0-9\s.,'&()#-]+$/, "Occasion name contains invalid characters"),
+  themeDecor: z.boolean().optional(),
+  customCakeDessert: z.boolean().optional(),
+  signatureCafeMenu: z.boolean().optional(),
 });
 
 // Board room specific fields
@@ -132,7 +122,7 @@ const boardRoomSchema = baseBookingSchema.extend({
   refreshments: z.enum(["none", "tea_coffee", "snacks", "full_catering"]).optional(),
 });
 
-// Business lounge specific fields
+// Executive lounge specific fields
 const businessLoungeSchema = baseBookingSchema.extend({
   workType: z.enum(["individual", "small_group", "meeting"], { required_error: "Work type is required" }),
   wifiRequired: z.boolean().optional(),
@@ -146,26 +136,38 @@ type BookingType = "birthday" | "boardroom" | "lounge";
 const bookingCards = [
   {
     id: "birthday" as BookingType,
-    title: "Birthday Events",
-    description: "Celebrate your special day with us. Perfect for kids' parties, milestone birthdays, and family celebrations.",
+    title: "Celebrations & Events",
+    description: "Create unforgettable moments at RD Cafe. Perfect for birthdays, baby showers, success parties, and all your special gatherings.",
     icon: Cake,
-    features: ["Customizable decorations", "Cake arrangements", "Catering options", "Photo booth area"],
-    priceInfo: "Starting from ₹5,000",
+    features: ["Theme Decor", "Custom Cakes & Dessert", "Signature Cafe Menu"],
+    priceInfo: "Custom pricing based on setup",
   },
   {
     id: "boardroom" as BookingType,
     title: "Board Room",
-    description: "Professional meeting space for corporate gatherings, presentations, and business discussions.",
+    description: "Professional meeting space for corporate gatherings, executive discussions, and business sessions.",
     icon: Presentation,
-    features: ["Projector & screen", "Video conferencing", "Whiteboard", "Refreshment service"],
+    features: [
+      "Conference Table & Comfortable Seating",
+      "Smart Displays & Presentation Screens",
+      "HD Videoconferencing & PA System",
+      "High-Speed Wi‑Fi & Integrated Power",
+      "On-Demand Printing",
+    ],
     priceInfo: "Starting from ₹2,000/hr",
   },
   {
     id: "lounge" as BookingType,
-    title: "Business Lounge",
-    description: "A comfortable co-working space for individuals and small teams with premium amenities.",
+    title: "Executive Lounge",
+    description: "The Executive Lounge offers a more luxurious and private experience for special occasions or intimate gatherings.",
     icon: Briefcase,
-    features: ["High-speed WiFi", "Power outlets", "Quiet zones", "Coffee included"],
+    features: [
+      "Dedicated service from cafe staff",
+      "Enhanced privacy for confidential discussions or celebrations",
+      "Wi‑Fi Connectivity",
+      "A TV for entertainment or presentations",
+      "Power Sockets",
+    ],
     priceInfo: "Starting from ₹500/hr",
   },
 ];
@@ -388,98 +390,73 @@ const Bookings = () => {
 
   const renderBirthdayFields = () => (
     <div className="space-y-6">
-      {/* Birthday Person Details */}
+      {/* Celebration Details */}
       <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
         <h4 className="font-medium text-foreground mb-4 flex items-center gap-2">
           <Cake size={18} className="text-primary" />
-          Birthday Person Details
+          Celebration Details
         </h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="birthdayPersonName">Name *</Label>
-            <Input
-              id="birthdayPersonName"
-              value={formData.birthdayPersonName || ""}
-              onChange={(e) => handleChange("birthdayPersonName", e.target.value)}
-              placeholder="Birthday person's name"
-              className={`bg-background ${errors.birthdayPersonName ? "border-destructive" : ""}`}
-            />
-            {errors.birthdayPersonName && <p className="text-sm text-destructive">{errors.birthdayPersonName}</p>}
+            <Label htmlFor="eventType">Occasion Type *</Label>
+            <Select value={formData.eventType || ""} onValueChange={(value) => handleChange("eventType", value)}>
+              <SelectTrigger className={errors.eventType ? "border-destructive" : ""}>
+                <SelectValue placeholder="Select occasion" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="birthday">Birthday</SelectItem>
+                <SelectItem value="baby_shower">Baby Shower</SelectItem>
+                <SelectItem value="success_party">Success Party</SelectItem>
+                <SelectItem value="anniversary">Anniversary</SelectItem>
+                <SelectItem value="other">Other Celebration</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.eventType && <p className="text-sm text-destructive">{errors.eventType}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="birthdayPersonDOB">Date of Birth *</Label>
+            <Label htmlFor="occasionName">Occasion / Guest of Honor *</Label>
             <Input
-              id="birthdayPersonDOB"
-              type="date"
-              value={formData.birthdayPersonDOB || ""}
-              onChange={(e) => handleChange("birthdayPersonDOB", e.target.value)}
-              className={`bg-background ${errors.birthdayPersonDOB ? "border-destructive" : ""}`}
+              id="occasionName"
+              value={formData.occasionName || ""}
+              onChange={(e) => handleChange("occasionName", e.target.value)}
+              placeholder="e.g., Aisha's Birthday"
+              className={`bg-background ${errors.occasionName ? "border-destructive" : ""}`}
             />
-            {errors.birthdayPersonDOB && <p className="text-sm text-destructive">{errors.birthdayPersonDOB}</p>}
+            {errors.occasionName && <p className="text-sm text-destructive">{errors.occasionName}</p>}
           </div>
         </div>
       </div>
 
-      {/* Cake Selection */}
-      <div className="space-y-2">
-        <Label htmlFor="cakeChoice">Choose the Cake *</Label>
-        <Select value={formData.cakeChoice || ""} onValueChange={(value) => handleChange("cakeChoice", value)}>
-          <SelectTrigger className={errors.cakeChoice ? "border-destructive" : ""}>
-            <SelectValue placeholder="Select cake flavor" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="chocolate">Chocolate Cake</SelectItem>
-            <SelectItem value="vanilla">Vanilla Cake</SelectItem>
-            <SelectItem value="butterscotch">Butterscotch Cake</SelectItem>
-            <SelectItem value="red_velvet">Red Velvet Cake</SelectItem>
-            <SelectItem value="black_forest">Black Forest Cake</SelectItem>
-            <SelectItem value="custom">Custom (Specify in requests)</SelectItem>
-          </SelectContent>
-        </Select>
-        {errors.cakeChoice && <p className="text-sm text-destructive">{errors.cakeChoice}</p>}
-      </div>
-
-      {/* Message on Cake */}
-      <div className="space-y-2">
-        <Label htmlFor="cakeMessage">Message on Cake (Optional)</Label>
-        <Input
-          id="cakeMessage"
-          value={formData.cakeMessage || ""}
-          onChange={(e) => handleChange("cakeMessage", e.target.value)}
-          placeholder="e.g., Happy Birthday John!"
-          className="bg-background"
-          maxLength={100}
-        />
-        <p className="text-xs text-muted-foreground">Max 100 characters for cake message</p>
-      </div>
-
-      {/* Decoration Type */}
-      <div className="space-y-2">
-        <Label htmlFor="decorationType">Choose Decoration *</Label>
-        <Select value={formData.decorationType || ""} onValueChange={(value) => handleChange("decorationType", value)}>
-          <SelectTrigger className={errors.decorationType ? "border-destructive" : ""}>
-            <SelectValue placeholder="Select decoration package" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="basic">Basic (Balloons & Banner) - ₹500</SelectItem>
-            <SelectItem value="standard">Standard (Balloons, Banner, Streamers) - ₹1,500</SelectItem>
-            <SelectItem value="premium">Premium (Full Theme Decoration) - ₹3,500</SelectItem>
-            <SelectItem value="custom">Custom (Discuss with us)</SelectItem>
-          </SelectContent>
-        </Select>
-        {errors.decorationType && <p className="text-sm text-destructive">{errors.decorationType}</p>}
-      </div>
-
-      {/* Catering */}
-      <div className="flex items-center gap-3 p-4 rounded-xl border border-border hover:border-primary/50 transition-colors">
-        <Checkbox
-          id="cateringRequired"
-          checked={formData.cateringRequired || false}
-          onCheckedChange={(checked) => handleChange("cateringRequired", checked)}
-        />
-        <div>
-          <Label htmlFor="cateringRequired" className="cursor-pointer font-medium">Add Catering Service</Label>
-          <p className="text-sm text-muted-foreground">Food & beverages for your guests</p>
+      <div className="space-y-3">
+        <Label>Included Options</Label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors">
+            <Checkbox
+              id="themeDecor"
+              checked={formData.themeDecor || false}
+              onCheckedChange={(checked) => handleChange("themeDecor", checked)}
+            />
+            <Label htmlFor="themeDecor" className="cursor-pointer">Theme Decor</Label>
+          </div>
+          <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors">
+            <Checkbox
+              id="customCakeDessert"
+              checked={formData.customCakeDessert || false}
+              onCheckedChange={(checked) => handleChange("customCakeDessert", checked)}
+            />
+            <Label htmlFor="customCakeDessert" className="cursor-pointer">Custom Cakes & Dessert</Label>
+          </div>
+          <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors">
+            <Checkbox
+              id="signatureCafeMenu"
+              checked={formData.signatureCafeMenu || false}
+              onCheckedChange={(checked) => handleChange("signatureCafeMenu", checked)}
+            />
+            <Label htmlFor="signatureCafeMenu" className="cursor-pointer">Signature Cafe Menu</Label>
+          </div>
+        </div>
+        <div className="rounded-xl bg-secondary/50 p-4 text-sm text-muted-foreground">
+          Need something more specific for your event? Add it in special requests and our team will tailor the setup with you.
         </div>
       </div>
     </div>
@@ -520,7 +497,7 @@ const Bookings = () => {
               checked={formData.projectorRequired || false}
               onCheckedChange={(checked) => handleChange("projectorRequired", checked)}
             />
-            <Label htmlFor="projectorRequired" className="cursor-pointer">Projector & Screen</Label>
+            <Label htmlFor="projectorRequired" className="cursor-pointer">Smart Displays & Presentation Screens</Label>
           </div>
           <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors">
             <Checkbox
@@ -528,7 +505,7 @@ const Bookings = () => {
               checked={formData.whiteboardRequired || false}
               onCheckedChange={(checked) => handleChange("whiteboardRequired", checked)}
             />
-            <Label htmlFor="whiteboardRequired" className="cursor-pointer">Whiteboard</Label>
+            <Label htmlFor="whiteboardRequired" className="cursor-pointer">On-Demand Printing</Label>
           </div>
           <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors">
             <Checkbox
@@ -536,9 +513,13 @@ const Bookings = () => {
               checked={formData.videoConferencing || false}
               onCheckedChange={(checked) => handleChange("videoConferencing", checked)}
             />
-            <Label htmlFor="videoConferencing" className="cursor-pointer">Video Conferencing</Label>
+            <Label htmlFor="videoConferencing" className="cursor-pointer">HD Videoconferencing</Label>
           </div>
         </div>
+      </div>
+
+      <div className="rounded-xl bg-secondary/50 p-4 text-sm text-muted-foreground">
+        Every Board Room booking includes conference seating, high-speed Wi‑Fi, integrated power access, and an in-room PA system.
       </div>
 
       <div className="space-y-2">
@@ -567,9 +548,9 @@ const Bookings = () => {
             <SelectValue placeholder="Select work type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="individual">Individual Work</SelectItem>
-            <SelectItem value="small_group">Small Group (2-4 people)</SelectItem>
-            <SelectItem value="meeting">Informal Meeting</SelectItem>
+            <SelectItem value="individual">Private Gathering</SelectItem>
+            <SelectItem value="small_group">Executive Catch-Up</SelectItem>
+            <SelectItem value="meeting">Intimate Celebration</SelectItem>
           </SelectContent>
         </Select>
         {errors.workType && <p className="text-sm text-destructive">{errors.workType}</p>}
@@ -584,7 +565,7 @@ const Bookings = () => {
               checked={formData.wifiRequired ?? true}
               onCheckedChange={(checked) => handleChange("wifiRequired", checked)}
             />
-            <Label htmlFor="wifiRequired" className="cursor-pointer">High-Speed WiFi</Label>
+            <Label htmlFor="wifiRequired" className="cursor-pointer">Wi‑Fi Connectivity</Label>
           </div>
           <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors">
             <Checkbox
@@ -592,7 +573,7 @@ const Bookings = () => {
               checked={formData.powerOutlets ?? true}
               onCheckedChange={(checked) => handleChange("powerOutlets", checked)}
             />
-            <Label htmlFor="powerOutlets" className="cursor-pointer">Power Outlets</Label>
+            <Label htmlFor="powerOutlets" className="cursor-pointer">Power Sockets</Label>
           </div>
           <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/50 transition-colors">
             <Checkbox
@@ -600,9 +581,13 @@ const Bookings = () => {
               checked={formData.printingAccess || false}
               onCheckedChange={(checked) => handleChange("printingAccess", checked)}
             />
-            <Label htmlFor="printingAccess" className="cursor-pointer">Printing Access</Label>
+            <Label htmlFor="printingAccess" className="cursor-pointer">TV for Entertainment or Presentations</Label>
           </div>
         </div>
+      </div>
+
+      <div className="rounded-xl bg-secondary/50 p-4 text-sm text-muted-foreground">
+        The Executive Lounge also includes dedicated service from our cafe team and enhanced privacy for confidential discussions or special occasions.
       </div>
 
       <div className="space-y-2">
@@ -624,11 +609,11 @@ const Bookings = () => {
   const getBookingTitle = () => {
     switch (selectedBooking) {
       case "birthday":
-        return "Birthday Event Booking";
+        return "Celebrations & Events Booking";
       case "boardroom":
         return "Board Room Booking";
       case "lounge":
-        return "Business Lounge Booking";
+        return "Executive Lounge Booking";
       default:
         return "Booking";
     }
@@ -637,21 +622,29 @@ const Bookings = () => {
   return (
     <Layout>
       {/* Hero */}
-      <section className="pt-32 pb-16 lg:pt-40 lg:pb-24 bg-secondary/30">
-        <div className="container-cafe text-center">
+      <section className="relative overflow-hidden pt-32 pb-16 lg:pt-40 lg:pb-24">
+        <div className="absolute inset-0">
+          <img
+            src={bookingsLoungeImage}
+            alt="Warm interior seating at RD CAFE"
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,8,0,0.55),rgba(20,8,0,0.68))]" />
+        </div>
+        <div className="container-cafe relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-4 block">
+            <span className="mb-4 block text-sm uppercase tracking-[0.3em] text-espresso-foreground/70">
               Reserve Your Space
             </span>
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl mb-6">
+            <h1 className="mb-6 font-serif text-5xl text-espresso-foreground md:text-6xl lg:text-7xl">
               Bookings
             </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
-              From birthday celebrations to business meetings, we have the perfect space for every occasion.
+            <p className="mx-auto max-w-2xl text-lg leading-relaxed text-espresso-foreground/85">
+              From celebrations and private gatherings to executive discussions, we have the perfect space for every occasion.
             </p>
           </motion.div>
         </div>

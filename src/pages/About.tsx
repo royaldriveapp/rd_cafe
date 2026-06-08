@@ -116,7 +116,7 @@ const About = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.15 }}
               >
-                RD CAFE was born from a simple belief: that everyone deserves a place where they can pause, breathe, and savor the moment. In 2020, amidst a world that seemed to be moving faster than ever, we opened our doors as a sanctuary—a cozy corner where time slows down.
+                RD CAFE was born from a simple belief: that everyone deserves a place where they can pause, breathe, and savor the moment. In 2020, amidst a world that seemed to be moving faster than ever, we opened our doors as a sanctuary — a cozy corner designed for meaningful conversations, quiet comfort, and memorable gatherings.
               </motion.p>
               
               <motion.p 
