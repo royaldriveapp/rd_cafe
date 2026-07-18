@@ -19,8 +19,10 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogArticle = lazy(() => import("./pages/BlogArticle"));
 const CafeAdmin = lazy(() => import("./pages/CafeAdmin"));
+const Maintenance = lazy(() => import("./pages/Maintenance"));
 
 const queryClient = new QueryClient();
+const SITE_UNDER_MAINTENANCE = true;
 
 const RouteLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -37,21 +39,27 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <Suspense fallback={<RouteLoader />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/menu" element={<Menu />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogArticle />} />
-              <Route path="/cafe-admin" element={<CafeAdmin />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/facilities" element={<Facilities />} />
-              <Route path="/bookings" element={<Bookings />} />
-              <Route path="/admin" element={<Admin />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            {SITE_UNDER_MAINTENANCE ? (
+              <Routes>
+                <Route path="*" element={<Maintenance />} />
+              </Routes>
+            ) : (
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/menu" element={<Menu />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogArticle />} />
+                <Route path="/cafe-admin" element={<CafeAdmin />} />
+                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/facilities" element={<Facilities />} />
+                <Route path="/bookings" element={<Bookings />} />
+                <Route path="/admin" element={<Admin />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            )}
           </Suspense>
         </BrowserRouter>
     </TooltipProvider>
